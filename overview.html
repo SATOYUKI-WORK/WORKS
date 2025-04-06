@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YUKI WORKS | システム全体の構成図・概要</title>
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+  <header>
+    <a href="index_yukiworks.html">ホーム</a>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>1. システム全体の構成図</h2>
+      <p>以下は、自宅ネットワーク内で構築したシステム全体の構成図です。各ノードの役割や接続関係を視覚的に示しています。</p>
+      <a href="img/構成図_4.jpg"><img src="img/構成図_4.jpg" alt="システム構成図" style="width:100%; max-width:800px;"></a>
+    </section>
+
+    <section>
+      <h2>2. ノード一覧と役割</h2>
+      <ul>
+      	<li><strong>naspi：</strong> Raspberry Pi 4 + Ansible + Zabbix + Kubernetesを用いたシステムの監視、管理</li>
+        <li><strong>pipf1：</strong> 外部公開用本番WEBサーバ、Docker上にApache、WordPressなどを構築</li>
+        <li><strong>pipf2：</strong> Docker上にWordPressなどを構築</li>
+        <li><strong>pipf3：</strong> Dockerはあるがコンテナの構築は未定、Apt-Cacher NGを導入し他のノードのアップデートの高速化に貢献</li>
+        <li><strong>pipf4ai：</strong> AIアクセラレータを搭載(Hailo-8L,13TOPS)、今後活用予定</li>
+        <li><strong>pipf5ai：</strong> AIアクセラレータを搭載(Hailo-8,26TOPS)、メモリ16GB搭載,ローカルLLM実行ノード</li>
+        <li><strong>sakuravps4vpn：</strong> 外部公開用のNginx＋VPN終端</li>
+        <li>※TOPS→1TOPSで1兆回の演算が可能</li>
+        <a href="img/ノード性能.png"><img src="img/ノード性能.png" alt="ノード性能" style="width:100%; max-width:800px;"></a>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. 利用技術と構成マップ</h2>
+      <p>本システムで利用している主な技術は以下のとおりです。</p>
+      <ul>
+        <li><strong>Docker：</strong> WordPressやApacheなどをコンテナ化して運用</li>
+        <li><strong>Ansible：</strong> 各ノードの初期構築・アップデートを自動化</li>
+        <li><strong>Kubernetes：</strong> 軽量クラスタの構築に挑戦中</li>
+        <li><strong>Zabbix：</strong> サーバ監視（CPU, メモリ, 死活, etc）</li>
+        <li><strong>OpenVPN：</strong> VPS⇔自宅間のセキュア接続</li>
+        <li><strong>LLM（Large Language Models）：大規模言語モデル</strong></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS | pf1サーバ</small></p>
+    <a href="index_yukiworks.html">ホーム</a>
+  </footer>
+</body>
+</html>
