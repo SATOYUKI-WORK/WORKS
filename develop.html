@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="YUKI WORKS - 技術の観察日記">
+  <meta property="og:description" content="動かして学ぶ、試して記す。開発の試行錯誤を記録した実践メモ。">
+  <meta property="og:image" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/img/yukiworks_thumb.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/index.html">
+  <title>YUKI WORKS - 動かして学ぶ、試して記す。技術の観察日記。</title>
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+
+  <header>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+    <!-- 既存のセクション省略 -->
+
+    <section>
+      <h2>10. Git/GitHubと開発・デプロイの流れ</h2>
+      <p>個人開発プロジェクトでは、GitとGitHubを活用してソースコード管理を行っています。以下は、ローカル開発からWeb公開までの基本的なフローです。</p>
+
+      <h3>使用ツール</h3>
+      <ul>
+        <li><strong>VSCode：</strong> 開発エディタ（Git拡張機能使用）</li>
+        <li><strong>Git：</strong> ローカルリポジトリでのバージョン管理</li>
+        <li><strong>GitHub：</strong> リモートリポジトリ、バックアップ、チーム共有基盤</li>
+      </ul>
+
+      <h3>開発からデプロイの基本フロー</h3>
+      <pre><code>ローカル開発（VSCode）
+↓
+git add / commit / push
+↓
+GitHub（マージ）
+↓
+WebサーバにSSHログイン → git pull
+↓
+Nginx等で公開（またはsystemctl restartなど）</code></pre>
+
+      <h3>学習・実践中の内容</h3>
+      <ul>
+        <li>ブランチ運用（main / feature / fix など）</li>
+        <li>GitHub上でのプルリクエスト作成とレビュー練習</li>
+        <li>GitHub Actions を使ったCI/CDの導入検討</li>
+      </ul>
+
+      <h3>今後の展望</h3>
+      <ul>
+        <li>GitHub Pages での静的サイトホスティング</li>
+        <li>DockerイメージのCIビルドと自動デプロイ</li>
+        <li>開発ログのQiitaへの投稿連携</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS ポートフォリオ | pf1サーバ</small></p>
+  </footer>
+</body>
+</html>

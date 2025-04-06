@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="YUKI WORKS - 技術の観察日記">
+  <meta property="og:description" content="動かして学ぶ、試して記す。開発の試行錯誤を記録した実践メモ。">
+  <meta property="og:image" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/img/yukiworks_thumb.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/index.html">
+  <title>YUKI WORKS - 動かして学ぶ、試して記す。技術の観察日記。</title>
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+
+  <header>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+    <!-- 既存のセクション省略 -->
+
+    <section>
+      <h2>9. ローカルLLM実行環境</h2>
+      <p>大規模言語モデル（LLM）をローカルで動作させる実験を行いました。外部APIに依存しないことで、プライバシーと応答性の両立を目指しています。</p>
+
+      <h3>使用環境</h3>
+      <ul>
+        <li>ホスト：pipf5AI（Raspberry Pi 5）</li>
+        <li>OS：Ubuntu 22.04 LTS (64bit)</li>
+        <li>RAM：8GB</li>
+        <li>CLI UI：llama.cpp + llama-cpp-python</li>
+      </ul>
+
+      <h3>使用モデル</h3>
+      <ul>
+        <li><strong>Mistral 7B (Q4_K_M)</strong>：gguf形式で実行</li>
+        <li>会話補助、要約、コード補完などに使用</li>
+      </ul>
+
+      <h3>実行コマンド例</h3>
+      <pre><code>$ ./main -m models/mistral-7b.Q4_K_M.gguf -p "こんにちは、自己紹介して。"</code></pre>
+
+      <h3>実行の様子（出力イメージ）</h3>
+      <img src="img/llm_console.png" alt="LLM実行画面" style="width:100%; max-width:800px;">
+
+      <h3>今後の取り組み</h3>
+      <ul>
+        <li>web UI（Open WebUIやtext-generation-webui）の導入</li>
+        <li>複数モデルの切り替え検証</li>
+        <li>小規模クラスタでの分散実行の研究</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS ポートフォリオ | pf1サーバ</small></p>
+  </footer>
+</body>
+</html>

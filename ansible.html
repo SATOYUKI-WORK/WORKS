@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="YUKI WORKS - 技術の観察日記">
+  <meta property="og:description" content="動かして学ぶ、試して記す。開発の試行錯誤を記録した実践メモ。">
+  <meta property="og:image" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/img/yukiworks_thumb.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/index.html">
+  <title>YUKI WORKS - 動かして学ぶ、試して記す。技術の観察日記。</title>
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+
+  <header>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+    <!-- 既存のセクション省略 -->
+
+    <section>
+      <h2>6. Ansible による自動化</h2>
+      <p>複数ノードの初期構築や保守作業を自動化するために、Ansibleを導入しました。</p>
+
+      <h3>主な用途と実行内容</h3>
+      <ul>
+        <li>各ノード（pipf2、pipf5AIなど）のパッケージアップデート</li>
+        <li>定期リブートやcron設定の統一化</li>
+        <li>sshd_configやfirewalldの自動反映</li>
+      </ul>
+
+      <h3>実行したPlaybookの例</h3>
+      <pre><code>- hosts: all
+  become: yes
+  tasks:
+    - name: パッケージのアップデート
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: 再起動のスケジュール登録
+      cron:
+        name: "weekly reboot"
+        minute: 0
+        hour: 3
+        weekday: 0
+        job: "/sbin/reboot"
+</code></pre>
+
+      <h3>実行の様子（スクリーンショットまたは動画リンク）</h3>
+      <p>実行時の出力例や、Ansible実行風景の録画を以下に掲載予定です。</p>
+      <img src="img/ansible_run.png" alt="Ansible 実行風景" style="width:100%; max-width:800px;">
+
+      <h3>今後実施したいこと</h3>
+      <ul>
+        <li>タグ・ロールによる役割ごとの設定管理</li>
+        <li>Gitリポジトリ管理によるプレイブックのバージョン管理</li>
+        <li>Ansible Vault を用いた機密情報管理</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS ポートフォリオ | pf1サーバ</small></p>
+  </footer>
+</body>
+</html>

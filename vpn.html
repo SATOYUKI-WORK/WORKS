@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="YUKI WORKS - 技術の観察日記">
+  <meta property="og:description" content="動かして学ぶ、試して記す。開発の試行錯誤を記録した実践メモ。">
+  <meta property="og:image" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/img/yukiworks_thumb.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/index.html">
+  <title>YUKI WORKS - 動かして学ぶ、試して記す。技術の観察日記。</title>
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+
+  <header>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+    <!-- 既存のセクション省略 -->
+
+    <section>
+      <h2>8. VPN構成と活用</h2>
+      <p>外部VPSと自宅サーバ間のセキュアな通信のため、OpenVPNを用いたVPN接続を構成しました。</p>
+
+      <h3>使用ソフトウェア</h3>
+      <ul>
+        <li><strong>OpenVPN：</strong> サーバ・クライアント構成</li>
+        <li><strong>pfSense：</strong> ログとトンネル可視化（別途検証）</li>
+      </ul>
+
+      <h3>ネットワーク構成概要</h3>
+      <ul>
+        <li>VPS（OpenVPNサーバ） ⇔ pipf1（クライアント）</li>
+        <li>pipf1を経由し、自宅LAN全体にセキュアなアクセス</li>
+        <li>Nginxのリバースプロキシと連携し、Dockerサービスを外部公開</li>
+      </ul>
+
+      <h3>構成図</h3>
+      <img src="img/vpn_structure.png" alt="VPN構成図" style="width:100%; max-width:800px;">
+
+      <h3>接続性能の検証</h3>
+      <pre><code>$ speedtest-cli
+Download: 45.67 Mbit/s
+Upload: 11.22 Mbit/s
+Latency: 32.5 ms</code></pre>
+
+      <h3>今後の改善ポイント</h3>
+      <ul>
+        <li>WireGuardへの置き換え検証（軽量・高速）</li>
+        <li>トラフィックのログ集約と可視化（Grafana連携）</li>
+        <li>認証情報の自動更新と証明書管理</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS ポートフォリオ | pf1サーバ</small></p>
+  </footer>
+</body>
+</html>

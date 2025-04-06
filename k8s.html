@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="YUKI WORKS - 技術の観察日記">
+  <meta property="og:description" content="動かして学ぶ、試して記す。開発の試行錯誤を記録した実践メモ。">
+  <meta property="og:image" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/img/yukiworks_thumb.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/index.html">
+  <title>YUKI WORKS - 動かして学ぶ、試して記す。技術の観察日記。</title>
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+
+  <header>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+    <!-- 既存のセクション省略 -->
+
+    <section>
+      <h2>7. Kubernetes (k8s) の検証と構成</h2>
+      <p>軽量なk8s環境（k3s）を用いて、クラスタ構築と基本的なPod管理の検証を行いました。</p>
+
+      <h3>クラスタ構成</h3>
+      <ul>
+        <li>マスターノード：1台（pipf1）</li>
+        <li>ワーカーノード：2台（pipf2, pipf5AI）</li>
+        <li>使用ディストリビューション：k3s（軽量Kubernetes）</li>
+      </ul>
+
+      <h3>クラスタ稼働確認</h3>
+      <pre><code>$ kubectl get nodes
+NAME       STATUS   ROLES                  AGE   VERSION
+pipf1      Ready    control-plane,master   5d    v1.28.4+k3s
+pipf2      Ready    <none>                 5d    v1.28.4+k3s
+pipf5ai    Ready    <none>                 5d    v1.28.4+k3s</code></pre>
+
+      <h3>起動したPodの例</h3>
+      <ul>
+        <li>nginxテストPod</li>
+        <li>内部用busyboxデバッグ用Pod</li>
+        <li>kubernetes-dashboard（導入準備中）</li>
+      </ul>
+
+      <h3>今後の展望</h3>
+      <ul>
+        <li>Helmを用いたアプリデプロイの自動化</li>
+        <li>GitOps構成（ArgoCDまたはFlux）の検証</li>
+        <li>ストレージクラスの導入と永続化のテスト</li>
+        <li>NodePortやIngressによるサービス公開方法の比較</li>
+      </ul>
+
+      <img src="img/k8s_dashboard.png" alt="k8sクラスタのダッシュボード画面" style="width:100%; max-width:800px;">
+    </section>
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS ポートフォリオ | pf1サーバ</small></p>
+  </footer>
+</body>
+</html>
