@@ -1,6 +1,6 @@
 <?php
 // 読み込むファイルのパスを指定
-$file_path = 'data/input.txt';
+$file_path = 'data/output.txt';
 
 // ファイルが存在するか確認
 if (file_exists($file_path)) {
