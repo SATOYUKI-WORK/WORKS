@@ -28,32 +28,30 @@
 
       <h3>主な用途と実行内容</h3>
       <ul>
-        <li>各ノード（pipf2、pipf5AIなど）のパッケージアップデート</li>
-        <li>定期リブートやcron設定の統一化</li>
-        <li>sshd_configやfirewalldの自動反映</li>
+        <li>各ノード（pipf1～3、pipf4ai,pipf5aiなど）のパッケージアップデート</li>
+        <li>定期リブートや公開鍵の配布</li>
       </ul>
 
       <h3>実行したPlaybookの例</h3>
-      <pre><code>- hosts: all
-  become: yes
+      <pre><code>- name: pipfグループ全体のパッケージ更新
+  hosts: pipf
+  become: yes  # sudo を有効にする
   tasks:
-    - name: パッケージのアップデート
+    - name: パッケージインデックスを更新（apt update）
       apt:
         update_cache: yes
+
+    - name: パッケージをアップグレード（apt upgrade）
+      apt:
         upgrade: dist
 
-    - name: 再起動のスケジュール登録
-      cron:
-        name: "weekly reboot"
-        minute: 0
-        hour: 3
-        weekday: 0
-        job: "/sbin/reboot"
+    - name: 不要なパッケージを削除（apt autoremove）
+      apt:
+        autoremove: yes
 </code></pre>
 
-      <h3>実行の様子（スクリーンショットまたは動画リンク）</h3>
-      <p>実行時の出力例や、Ansible実行風景の録画を以下に掲載予定です。</p>
-      <img src="img/ansible_run.png" alt="Ansible 実行風景" style="width:100%; max-width:800px;">
+      <h3>実行の様子</h3>
+      <a href="img/ansible_demo.gif"><img src="img/ansible_demo.gif" alt="Ansible 実行風景" style="width:100%; max-width:800px;"></a>
 
       <h3>今後実施したいこと</h3>
       <ul>
