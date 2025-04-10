@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="YUKI WORKS - 技術の観察日記">
+  <meta property="og:description" content="動かして学ぶ、試して記す。開発の試行錯誤を記録した実践メモ。">
+  <meta property="og:image" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/img/yukiworks_thumb.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tk2-212-15777.vs.sakura.ne.jp/app1/index.html">
+  <title>YUKI WORKS - 動かして学ぶ、試して記す。技術の観察日記。</title>
+  <link rel="shortcut icon" href="img/yukiworks_favicon.ico">
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+<div class="home" ><a href="../index_yukiworks.html">ホーム</a></div>
+<p><div class="home" ><a href="../blog.html">ブログ・コラム集へ戻る</a></div></p>
+  <header>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+
+    <section>
+      <p>2025/4/10</p>
+      <h2>少しづつでも楽をしたい</h2>
+      <p>Tera Termでサーバにログインして作業すること多いのでログインが楽になるバッチを作成しました。</p>
+      <a href="img/loginmenu.png"><img src="img/loginmenu.png" alt="loginmenu" style="width:100%; max-width:800px;"></a>
+      <h3>実行時の様子</h3>
+      <a href="img/loginmenu.gif"><img src="img/loginmenu.gif" alt="loginmenu" style="width:100%; max-width:800px;"></a>
+    
+          <h3>start_teraterm.batの中身</h3>
+      <pre><code>@echo off
+chcp 65001 >nul
+title Tera Term TTL起動メニュー
+
+:menu
+echo.
+echo ========= Tera Term 接続先選択 =========
+echo 0. raspi (192.168.11.15)
+echo 1. pipf1 (192.168.11.51)
+echo 2. pipf2 (192.168.11.52)
+echo 3. pipf3 (192.168.11.53)
+echo 4. pipf4ai (192.168.11.54)
+echo 5. pipf5ai (192.168.11.55)
+echo 6. sakuravps4vpn (160.16.73.31)
+echo ========================================
+set /p choice=接続先の番号を選んでください（0-6）:
+
+mem ログインttlがある場所を記載
+set ttl_path="C:\Users\XXXX\YYYY\ZZZZ\ttlマクロ\"
+cd C:\Users\XXXX\YYYY\ZZZZ\ttlマクロ\
+
+if "%choice%"=="1" (
+    start pipf1_login.ttl
+) else if "%choice%"=="2" (
+    start pipf2_login.ttl
+) else if "%choice%"=="3" (
+    start pipf3_login.ttl
+) else if "%choice%"=="4" (
+    start pipf4ai_login.ttl
+) else if "%choice%"=="5" (
+    start pipf5ai_login.ttl
+) else if "%choice%"=="6" (
+    start sakuravps4vpn_login.ttl
+) else if "%choice%"=="0" (
+    start raspi4_login.ttl
+) else (
+    echo 無効な選択です。0〜6の数字を入力してください。
+    pause
+    goto menu
+)
+
+</code></pre>
+</section>
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS | pf1サーバ</small></p>
+  </footer>
+<div class="home" ><a href="../index_yukiworks.html">ホーム</a></div>
+<p><div class="home" ><a href="../blog.html">ブログ・コラム集へ戻る</a></div></p>
+</body>
+</html>
