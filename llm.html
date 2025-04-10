@@ -24,33 +24,38 @@
 
     <section>
       <h2>9. ローカルLLM実行環境</h2>
-      <p>大規模言語モデル（LLM）をローカルで動作させる実験を行いました。外部APIに依存しないことで、プライバシーと応答性の両立を目指しています。</p>
+      <p>オープンソースの大規模言語モデル（LLM）をローカルで動作させる実験を行いました。外部APIに依存しないことで、プライバシーと応答性の両立を目指しています。</p>
 
       <h3>使用環境</h3>
       <ul>
-        <li>ホスト：pipf5AI（Raspberry Pi 5）</li>
+        <li>ホスト：pipf5ai（Raspberry Pi 5）</li>
         <li>OS：Ubuntu 22.04 LTS (64bit)</li>
-        <li>RAM：8GB</li>
-        <li>CLI UI：llama.cpp + llama-cpp-python</li>
+        <li>RAM：16GB</li>
+        <li>CLI UI：ollama(オラマ) version 0.6.2 + gemma3 12B</li>
       </ul>
 
       <h3>使用モデル</h3>
       <ul>
-        <li><strong>Mistral 7B (Q4_K_M)</strong>：gguf形式で実行</li>
+        <li><strong>gemma3 12B(Q4_K_M)</strong></li>
         <li>会話補助、要約、コード補完などに使用</li>
       </ul>
 
       <h3>実行コマンド例</h3>
-      <pre><code>$ ./main -m models/mistral-7b.Q4_K_M.gguf -p "こんにちは、自己紹介して。"</code></pre>
+      <pre><code>pf5@pipf5ai:~ $ ollama run gemma3:12b
+>>> Send a message (/? for help)</code></pre>
 
       <h3>実行の様子（出力イメージ）</h3>
-      <img src="img/llm_console.png" alt="LLM実行画面" style="width:100%; max-width:800px;">
+      <a href="img/llm_run.png"><img src="img/llm_run.png" alt="LLM実行画面" style="width:100%; max-width:800px;"></a>
+
+      <h3>実行の様子（WEBUI）</h3>
+      <a href="img/llm_webui.png"><img src="img/llm_webui.png" alt="LLM_webui実行画面" style="width:100%; max-width:800px;"></a>
+
 
       <h3>今後の取り組み</h3>
       <ul>
-        <li>web UI（Open WebUIやtext-generation-webui）の導入</li>
         <li>複数モデルの切り替え検証</li>
-        <li>小規模クラスタでの分散実行の研究</li>
+        <li>ノード間での連携</li>
+        <li>LLMを用いたWEBアプリの構築</li>
       </ul>
     </section>
   </main>
