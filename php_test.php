@@ -1,6 +1,6 @@
 <?php
 // 読み込むファイルのパスを指定
-$file_path = 'data/output.txt';
+$file_path = '/mnt/naspi/public2/ai-result/output.txt';
 
 // ファイルが存在するか確認
 if (file_exists($file_path)) {
