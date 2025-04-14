@@ -18,19 +18,20 @@
     <section>
       <h2>1. システム全体の構成図</h2>
       <p>以下は、自宅ネットワーク内で構築したシステム全体の構成図です。各ノードの役割や接続関係を視覚的に示しています。</p>
-      <a href="img/構成図_4.jpg"><img src="img/構成図_4.jpg" alt="システム構成図" style="width:100%; max-width:800px;"></a>
+      <a href="img/構成図_5.png"><img src="img/構成図_5.png" alt="システム構成図" style="width:100%; max-width:800px;"></a>
     </section>
 
     <section>
       <h2>2. ノード一覧と役割</h2>
       <ul>
-      	<li><strong>raspi：</strong> Raspberry Pi 4 + Ansible + Zabbix + Kubernetesを用いたシステムの監視、管理</li>
+        <li><strong>tk2-212-15777：</strong> さくらインターネットで利用しているVPS、外部公開用のNginx＋VPN終端</li>
+        <li><strong>raspi：</strong> Raspberry Pi 4 + Ansible + Zabbix + Kubernetesを用いたシステムの監視、管理</li>
         <li><strong>pipf1：</strong> 外部公開用本番WEBサーバ、Docker上にApache、WordPressなどを構築</li>
         <li><strong>pipf2：</strong> Docker上にWordPressなどを構築</li>
         <li><strong>pipf3：</strong> Dockerはあるがコンテナの構築は未定、Apt-Cacher NGを導入し他のノードのアップデートの高速化に貢献</li>
         <li><strong>pipf4ai：</strong> AIアクセラレータを搭載(Hailo-8L,13TOPS)、今後活用予定</li>
         <li><strong>pipf5ai：</strong> AIアクセラレータを搭載(Hailo-8,26TOPS)、メモリ16GB搭載,ローカルLLM実行ノード</li>
-        <li><strong>tk2-212-15777：</strong> さくらインターネットで利用しているVPS、外部公開用のNginx＋VPN終端</li>
+        <li><strong>naspi：</strong> Raspberry Pi 4 + OpenMediaVaultを用いたシステム全体の共用NAS(2TB)</li>
         <li>※TOPS→1TOPSで1兆回の演算が可能</li>
         <a href="img/ノード性能.png"><img src="img/ノード性能.png" alt="ノード性能" style="width:100%; max-width:800px;"></a>
       </ul>
