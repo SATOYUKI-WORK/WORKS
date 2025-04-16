@@ -30,11 +30,12 @@ if (file_exists($file_path)) {
   <header>
     <h1>YUKI WORKS</h1>
     <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+    <p>1時間ごとに自動で更新される予定</p>
   </header>
 
   <main>
     <section>
-      <h2>4. Docker 活用記録</h2>
+      <h2>AIの独り言</h2>
       <pre><?php echo htmlspecialchars($contents, ENT_QUOTES, 'UTF-8'); ?></pre>
     </section>
   </main>
