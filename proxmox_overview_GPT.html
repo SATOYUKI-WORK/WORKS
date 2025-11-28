@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YUKI WORKS | Proxmox仮想化基盤</title>
+  <link rel="shortcut icon" href="img/yukiworks_favicon.ico">
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+<div class="home"><a href="index_yukiworks.html">ホーム</a></div>
+
+<header>
+  <h1>YUKI WORKS</h1>
+  <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+</header>
+
+<main>
+
+  <!-- 1. プロジェクト概要 -->
+  <section>
+    <h2>1. プロジェクト概要</h2>
+    <p>
+      自宅ラボ環境において、複数台のミニPCを用いた <strong>Proxmox VE ベースの仮想化基盤</strong> を構築しました。<br>
+      物理サーバをそのまま増やすのではなく、仮想化基盤上に複数の VM を集約することで、次のようなメリットを得ています。
+    </p>
+    <ul>
+      <li>検証用サーバの素早い立ち上げ・削除</li>
+      <li>リソース（CPU / メモリ / ストレージ）の有効活用</li>
+      <li>障害時の復旧・移行のしやすさ</li>
+    </ul>
+    <p>これにより、自宅ラボ全体の柔軟性と拡張性を高めています。</p>
+  </section>
+
+  <!-- 2. 目的・背景 -->
+  <section>
+    <h2>2. 目的・背景</h2>
+    <p>
+      これまで自宅ラボでは、Raspberry Pi などの物理サーバに直接 OS や各種サービスをインストールしていました。しかし、次のような課題がありました。
+    </p>
+    <ul>
+      <li>新しい検証を行うたびに OS の入れ替えが必要</li>
+      <li>サービスごとの環境差分管理が複雑</li>
+      <li>物理障害が発生した場合の復旧に時間がかかる</li>
+    </ul>
+    <p>
+      そこで、<strong>仮想化基盤の導入による柔軟なリソース管理と運用効率化</strong> を目的に、Proxmox VE を用いた基盤構築に取り組みました。
+    </p>
+  </section>
+
+  <!-- 3. 物理構成（ハードウェア） -->
+  <section>
+    <h2>3. 物理構成（ハードウェア）</h2>
+    <p>
+      Proxmox クラスタを中心とした自宅ラボ全体の物理構成は、以下のハードウェアで構成しています。<br>
+      Proxmox クラスタは NiPoGi ミニPCを、その他のノードは Raspberry Pi / VPS をベースとしています。
+    </p>
+
+    <h3>3.1 ノード一覧とスペック</h3>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ホスト名</th>
+            <th>CPU</th>
+            <th>メモリ</th>
+            <th>ストレージ</th>
+            <th>OS</th>
+            <th>モデル</th>
+            <th>共用ストレージ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>tk2-212-15777</td>
+            <td>仮想2Core</td>
+            <td>1GB</td>
+            <td>50GB</td>
+            <td>Ubuntu 24.04.3 LTS</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>raspi</td>
+            <td>4Core 1.8GHz</td>
+            <td>8GB</td>
+            <td>64GB</td>
+            <td>Debian GNU/Linux 12 (bookworm)</td>
+            <td>Raspberry Pi 4</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pipf1</td>
+            <td>4Core 2.4GHz</td>
+            <td>8GB</td>
+            <td>64GB</td>
+            <td>Debian GNU/Linux 12 (bookworm)</td>
+            <td>Raspberry Pi 5</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pipf2</td>
+            <td>4Core 2.4GHz</td>
+            <td>8GB</td>
+            <td>64GB</td>
+            <td>Debian GNU/Linux 12 (bookworm)</td>
+            <td>Raspberry Pi 5</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pipf3</td>
+            <td>4Core 2.4GHz</td>
+            <td>8GB</td>
+            <td>64GB</td>
+            <td>Debian GNU/Linux 12 (bookworm)</td>
+            <td>Raspberry Pi 5</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pipf4ai</td>
+            <td>4Core 2.4GHz</td>
+            <td>8GB</td>
+            <td>64GB</td>
+            <td>Debian GNU/Linux 12 (bookworm)</td>
+            <td>Raspberry Pi 5</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pipf5ai</td>
+            <td>4Core 2.4GHz</td>
+            <td>16GB</td>
+            <td>64GB</td>
+            <td>Debian GNU/Linux 12 (bookworm)</td>
+            <td>Raspberry Pi 5</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>naspi</td>
+            <td>4Core 1.8GHz</td>
+            <td>4GB</td>
+            <td>64GB</td>
+            <td>Debian GNU/Linux 12 (bookworm)</td>
+            <td>Raspberry Pi 4</td>
+            <td>2TB（共用NAS）</td>
+          </tr>
+          <tr>
+            <td>mstpf</td>
+            <td>Intel N97 4Core4T 3.4GHz</td>
+            <td>16GB</td>
+            <td>512GB</td>
+            <td>Ubuntu 24.04.3 LTS</td>
+            <td>NiPoGi Mini PC N97</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pve1</td>
+            <td>Intel N97 4Core4T 3.4GHz</td>
+            <td>16GB</td>
+            <td>512GB</td>
+            <td>Debian GNU/Linux 13 (trixie) + Proxmox VE 9.1.1</td>
+            <td>NiPoGi Mini PC N97</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pve2</td>
+            <td>Intel N97 4Core4T 3.4GHz</td>
+            <td>16GB</td>
+            <td>512GB</td>
+            <td>Debian GNU/Linux 13 (trixie) + Proxmox VE 9.1.1</td>
+            <td>NiPoGi Mini PC N97</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>pve3</td>
+            <td>Intel N97 4Core4T 3.4GHz</td>
+            <td>16GB</td>
+            <td>512GB</td>
+            <td>Debian GNU/Linux 13 (trixie) + Proxmox VE 9.1.1</td>
+            <td>NiPoGi Mini PC N97</td>
+            <td>&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>元の一覧表イメージも参考として掲載しています。</p>
+    <a href="img/ノード性能_pve.png">
+      <img src="img/ノード性能_pve.png" alt="ノード性能一覧" style="width:100%; max-width:900px;">
+    </a>
+  </section>
+
+  <!-- 4. Proxmox 仮想化基盤の構成 -->
+  <section>
+    <h2>4. Proxmox 仮想化基盤の構成</h2>
+
+    <h3>4.1 クラスタ構成</h3>
+    <p>
+      Proxmox VE を用いて、複数ノードによる <strong>クラスタ構成</strong> を構築しています。<br>
+      pve1?pve3 の3ノードをクラスタとして構成することで、次のようなことが可能になっています。
+    </p>
+    <ul>
+      <li>単一の Web UI から全ノード・全 VM を一元管理</li>
+      <li>Live Migration による VM のノード間移動</li>
+      <li>将来的な HA（高可用性）構成への拡張</li>
+    </ul>
+
+    <h3>4.2 ストレージ構成</h3>
+    <p>
+      現在は各ノードの <strong>ローカルSSD を VM ディスクの格納先として利用</strong> しています。<br>
+      シンプルな構成とすることで、初期構築のハードルを下げつつ、Proxmox の基本操作やバックアップ運用に集中できるようにしました。
+    </p>
+    <p>将来的には次のような構成を計画しています。</p>
+    <ul>
+      <li>分散ストレージ（Ceph）の導入</li>
+      <li>既存 NAS（naspi）との連携（NFS / iSCSI）による共有ストレージ化</li>
+    </ul>
+
+    <h3>4.3 仮想マシンの構成例</h3>
+    <p>仮想化基盤上には、主に以下のような VM を配置しています。</p>
+    <ul>
+      <li>監視用 VM（Zabbix プロキシ / テスト用 Zabbix サーバ など）</li>
+      <li>検証用 Linux サーバ（新しいディストリビューションの検証・学習用）</li>
+      <li>Web アプリケーション検証用 VM</li>
+    </ul>
+    <p>
+      新しい検証を行う際には、テンプレートから VM をクローンすることで、<strong>数分で新しい検証環境を用意</strong>できるようになりました。
+    </p>
+  </section>
+
+  <!-- 5. 運用・監視・バックアップ -->
+  <section>
+    <h2>5. 運用・監視・バックアップ</h2>
+    <h3>5.1 監視</h3>
+    <p>
+      既存の Zabbix 監視基盤に Proxmox ノード（pve1?pve3）を監視対象として追加し、CPU 使用率・メモリ使用量・ディスク使用率・稼働プロセスなどを可視化しています。
+    </p>
+
+    <h3>5.2 バックアップ</h3>
+    <p>
+      Proxmox のバックアップ機能を用いて、重要な VM を定期的にバックアップストレージへ退避しています。<br>
+      復元テストも実施し、バックアップデータから VM が正常に起動することを確認しました。
+    </p>
+
+    <h3>5.3 アップデート運用</h3>
+    <p>
+      Proxmox ノードおよび VM の OS 更新は、事前にスナップショットを取得した上で実施し、問題が発生した場合にはロールバックできるようにしています。
+    </p>
+  </section>
+
+  <!-- 6. 工夫した点・苦労した点 -->
+  <section>
+    <h2>6. 工夫した点・苦労した点</h2>
+
+    <h3>6.1 工夫した点</h3>
+    <ul>
+      <li>自宅ラボという制約の中で、消費電力と性能のバランスを考慮し、NiPoGi ミニPCを選定。</li>
+      <li>Proxmox のクラスタ機能を活用し、ノード障害時にも別ノードで VM を再作成しやすい構成を目指しました。</li>
+      <li>Zabbix による監視と組み合わせることで、リソース逼迫や障害の兆候に早期に気付けるようにしました。</li>
+    </ul>
+
+    <h3>6.2 苦労した点</h3>
+    <ul>
+      <li>初期構築時には、クラスタ参加時のネットワーク設定やファイアウォールの影響で、ノード同士が正しく通信できないトラブルが発生。</li>
+      <li>ログの確認や公式ドキュメントの参照を繰り返すことで原因を切り分け、必要なポートの開放や設定の見直しにより解決しました。</li>
+    </ul>
+  </section>
+
+  <!-- 7. 学び・身についたスキル -->
+  <section>
+    <h2>7. 学び・身についたスキル</h2>
+    <p>このプロジェクトを通じて、以下の知識・スキルを実践的に身につけました。</p>
+    <ul>
+      <li>ハイパーバイザ型仮想化（Proxmox VE）の仕組みと基本操作</li>
+      <li>クラスタ構成・ノード間通信・Quorum の考え方</li>
+      <li>仮想マシンのライフサイクル管理（テンプレート化、クローン、スナップショット、バックアップ）</li>
+      <li>監視システム（Zabbix）との連携による、リソース監視・障害検知</li>
+      <li>ネットワーク設計（管理ネットワークと家庭用ネットワークの分離 など）</li>
+    </ul>
+    <p>
+      これらの経験は、将来的に企業の仮想基盤やクラウド環境の運用・設計に携わる上での基礎になると考えています。
+    </p>
+  </section>
+
+  <!-- 8. 今後の発展アイデア -->
+  <section>
+    <h2>8. 今後の発展アイデア</h2>
+    <p>今後、以下のような発展を計画・検討しています。</p>
+    <ul>
+      <li>Ceph 等による共有分散ストレージの導入</li>
+      <li>HA（高可用性）機能を有効にした、自動フェイルオーバー構成の検証</li>
+      <li>Ansible を利用した VM デプロイや設定の自動化</li>
+      <li>Kubernetes などコンテナ基盤との組み合わせ検証（仮想化基盤上での K8s クラスタ構築）</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <p><small>Created by SATO YUKI</small></p>
+  <p><small>YUKI WORKS | pf1サーバ</small></p>
+</footer>
+
+<div class="home"><a href="index_yukiworks.html">ホーム</a></div>
+</body>
+</html>

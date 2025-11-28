@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YUKI WORKS | Proxmox 仮想化基盤</title>
+  <link rel="shortcut icon" href="img/yukiworks_favicon.ico">
+  <link rel="stylesheet" href="yuki_works.css">
+</head>
+<body>
+<div class="home"><a href="index_yukiworks.html">ホーム</a></div>
+  <header>
+    <h1>YUKI WORKS</h1>
+    <p>動かして学ぶ、試して記す。技術の観察日記。</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>1. プロジェクト概要</h2>
+      <p>自宅ラボ環境において、複数台のミニPCを用いた <strong>Proxmox VE ベースの仮想化基盤</strong> を構築しました。
+      物理サーバをそのまま増やすのではなく、仮想化基盤上に複数の VM を集約することで、</p>
+      <ul>
+        <li>検証用サーバの素早い立ち上げ・削除</li>
+        <li>リソース（CPU / メモリ / ストレージ）の有効活用</li>
+        <li>障害時の復旧・移行のしやすさ</li>
+      </ul>
+      <p>を実現しています。</p>
+    </section>
+
+    <section>
+      <h2>2. 目的・背景</h2>
+      <p>これまで自宅ラボでは、Raspberry Pi などの物理サーバに直接 OS や各種サービスをインストールしていました。
+      しかし、</p>
+      <ul>
+        <li>新しい検証を行うたびに OS の入れ替えが必要</li>
+        <li>サービスごとの環境差分管理が複雑</li>
+        <li>物理障害が発生した場合の復旧に時間がかかる</li>
+      </ul>
+      <p>といった課題がありました。<br>
+      そこで、<strong>仮想化基盤の導入による柔軟なリソース管理と運用効率化を目的に、Proxmox VE を用いた基盤構築に取り組みました。</strong></p>
+    </section>
+
+    <section>
+      <h2>3. 物理構成（ハードウェア）</h2>
+      <p>Proxmox クラスタは、NiPoGi ミニPC N97 をベースに以下のような構成としています。</p>
+      <ul>
+        <li><strong>pve1 / pve2 / pve3：仮想化ノード</strong>
+          <ul>
+            <li>CPU：Intel N97 4コア4スレッド 3.4GHz</li>
+            <li>メモリ：16GB</li>
+            <li>ストレージ：SSD 512GB（OS＋ローカルストレージ）</li>
+            <li>OS：Debian GNU/Linux 13 (trixie) + Proxmox VE 9.1.1</li>
+            <li>用途：VM の実行、クラスタ構成メンバー</li>
+          </ul>
+        </li>
+        <li><strong>ネットワーク機器</strong>
+          <ul>
+            <li>L2 スイッチ（自宅ラボ用セグメント）</li>
+            <li>ルータ（インターネット接続、必要に応じてポートフォワーディング）</li>
+          </ul>
+        </li>
+      </ul>
+      <p>Proxmox ノード用ネットワークは、家庭用機器とは論理的に分離しつつ、自宅内からは SSH や Web UI で管理できるよう設計しています。</p>
+      
+      <p><strong>ノード性能一覧</strong></p>
+      <a href="img/ノード性能_pve.png"><img src="img/ノード性能_pve.png" alt="ノード性能" style="width:100%; max-width:800px;"></a>
+    </section>
+
+    <section>
+      <h2>4. Proxmox 仮想化基盤の構成</h2>
+      
+      <h3>4.1 クラスタ構成</h3>
+      <p>Proxmox VE を用いて、複数ノードによる <strong>クラスタ構成</strong> を構築しています。
+      クラスタを組むことで、</p>
+      <ul>
+        <li>単一の Web UI から全ノード・全 VM を一元管理</li>
+        <li>Live Migration による VM のノード間移動</li>
+        <li>将来的な HA（高可用性）構成への拡張</li>
+      </ul>
+      <p>が可能となるよう設計しました。</p>
+
+      <h3>4.2 ストレージ構成</h3>
+      <p>現在は各ノードの <strong>ローカルSSD を VM ディスクの格納先として利用</strong>しています。
+      シンプルな構成とすることで、初期構築のハードルを下げつつ、
+      Proxmox の基本操作やバックアップ運用に集中できるようにしました。</p>
+      <p>将来的には、</p>
+      <ul>
+        <li>分散ストレージ（Ceph）の導入</li>
+        <li>既存 NAS との連携（NFS / iSCSI）</li>
+      </ul>
+      <p>により、クラスタ全体で共有ストレージを構成することを計画しています。</p>
+
+      <h3>4.3 仮想マシンの構成例</h3>
+      <p>仮想化基盤上には、主に以下のような VM を配置しています。</p>
+      <ul>
+        <li>監視用 VM（Zabbix プロキシ / テスト用 Zabbix サーバ など）</li>
+        <li>検証用 Linux サーバ（新しいディストリビューションの検証・学習用）</li>
+        <li>Web アプリケーション検証用 VM</li>
+      </ul>
+      <p>新しい検証を行う際には、テンプレートから VM をクローンすることで、<strong>数分で新しい検証環境を用意できる</strong>ようになりました。</p>
+    </section>
+
+    <section>
+      <h2>5. 運用・監視・バックアップ</h2>
+      <ul>
+        <li><strong>監視</strong>
+          <ul>
+            <li>既存の Zabbix 監視基盤に Proxmox ノード（pve1〜pve3）を監視対象として追加し、
+            CPU 使用率、メモリ使用量、ディスク使用率、稼働プロセスなどを可視化しています。</li>
+          </ul>
+        </li>
+        <li><strong>バックアップ</strong>
+          <ul>
+            <li>Proxmox のバックアップ機能を用いて、重要な VM を定期的にバックアップストレージへ退避しています。</li>
+            <li>復元テストも実施し、バックアップデータから VM が正常に起動することを確認しました。</li>
+          </ul>
+        </li>
+        <li><strong>アップデート運用</strong>
+          <ul>
+            <li>Proxmox ノードおよび VM の OS 更新は、事前にスナップショットを取得した上で実施し、
+            問題が発生した場合にはロールバックできるようにしています。</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>6. 工夫した点・苦労した点</h2>
+      <h3>工夫した点</h3>
+      <ul>
+        <li>自宅ラボという制約の中で、消費電力と性能のバランスを考慮し、ミニPCを選定しました。</li>
+        <li>Proxmox のクラスタ機能を活用し、ノード障害時にも別ノードで VM を再作成しやすい構成を目指しました。</li>
+        <li>Zabbix による監視と組み合わせることで、リソース逼迫や障害の兆候に早期に気付けるようにしました。</li>
+      </ul>
+      
+      <h3>苦労した点</h3>
+      <ul>
+        <li>初期構築時には、クラスタ参加時のネットワーク設定やファイアウォールの影響で、
+        ノード同士が正しく通信できないトラブルがありました。</li>
+        <li>ログの確認や公式ドキュメントの参照を繰り返すことで原因を切り分け、
+        必要なポートの開放や設定の見直しにより解決しました。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>7. 学び・身についたスキル</h2>
+      <p>このプロジェクトを通じて、以下の知識・スキルを実践的に身につけました。</p>
+      <ul>
+        <li>ハイパーバイザ型仮想化（Proxmox VE）の仕組みと基本操作</li>
+        <li>クラスタ構成・ノード間通信・Quorum の考え方</li>
+        <li>仮想マシンのライフサイクル管理（テンプレート化、クローン、スナップショット、バックアップ）</li>
+        <li>監視システム（Zabbix）との連携による、リソース監視・障害検知</li>
+        <li>ネットワーク設計（管理ネットワークと家庭用ネットワークの分離 など）</li>
+      </ul>
+      <p>これらの経験は、将来的に企業の仮想基盤やクラウド環境の運用・設計に携わる上での基礎になると考えています。</p>
+    </section>
+
+    <section>
+      <h2>8. 今後の発展</h2>
+      <ul>
+        <li>Ceph 等による共有分散ストレージの導入</li>
+        <li>HA（高可用性）機能を有効にした、自動フェイルオーバー構成の検証</li>
+        <li>Ansible を利用した VM デプロイや設定の自動化</li>
+        <li>Kubernetes などコンテナ基盤との組み合わせ検証（仮想化基盤上での K8s クラスタ構築）</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>物理構成</h2>
+      <p><strong>Proxmoxクラスタ（上からpve1、pve2、pve3、mstpf）</strong></p>
+      <a href="img/stack_pve.png"><img src="img/stack_pve.png" alt="Proxmoxクラスタスタック図" style="width:100%; max-width:800px;"></a>
+      <p><strong>ラックマウント全景</strong></p>
+      <a href="img/pve.jpg"><img src="img/pve.jpg" alt="Proxmoxクラスタ" style="width:90%; max-width:800px;"></a>
+    </section>
+
+  </main>
+
+  <footer>
+    <p><small>Created by SATO YUKI</small></p>
+    <p><small>YUKI WORKS | pf1サーバ</small></p>
+  </footer>
+<div class="home"><a href="index_yukiworks.html">ホーム</a></div>
+</body>
+</html>
