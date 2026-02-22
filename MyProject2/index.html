@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>チャッピー | Portfolio</title>
+  <style>
+    /* ===== CSS変数・リセット ===== */
+    :root {
+      --bg:        #0a0a0a;
+      --bg2:       #111111;
+      --bg3:       #1a1a1a;
+      --orange:    #ff6a00;
+      --orange2:   #ff9a3c;
+      --text:      #e8e8e8;
+      --text-muted:#888;
+      --radius:    12px;
+      --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a  { color: var(--orange); text-decoration: none; }
+
+    /* ===== スクロールバー ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
+
+    /* ===== アニメーション定義 ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes pulse-ring {
+      0%   { transform: scale(1);   opacity: 0.7; }
+      70%  { transform: scale(1.6); opacity: 0; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-60px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fillBar {
+      from { width: 0%; }
+    }
+
+    /* スクロール連動フェードイン */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== ナビゲーション ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      height: 64px;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 106, 0, 0.15);
+      transition: box-shadow var(--transition);
+    }
+    nav.scrolled {
+      box-shadow: 0 4px 30px rgba(255, 106, 0, 0.12);
+    }
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--orange), var(--orange2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.05em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--orange);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ハンバーガーメニュー（スマホ） */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 26px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ===== ヒーローセクション ===== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 100px 5% 60px;
+    }
+    /* 背景グラデーションアニメーション */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 60%, rgba(255,106,0,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 30%, rgba(255,154,60,0.08) 0%, transparent 50%);
+      animation: gradientShift 8s ease infinite;
+      background-size: 200% 200%;
+    }
+    /* 背景装飾グリッド */
+    #hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,106,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,106,0,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 5rem;
+      max-width: 1100px;
+      width: 100%;
+    }
+    .hero-text { flex: 1; }
+    .hero-tag {
+      display: inline-block;
+      padding: 4px 14px;
+      border: 1px solid var(--orange);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: var(--orange);
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      animation: fadeUp 0.9s ease 0.15s both;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, var(--orange), var(--orange2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      margin-top: 1.2rem;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      animation: fadeUp 0.9s ease 0.3s both;
+    }
+    .hero-btns {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.9s ease 0.45s both;
+    }
+    .btn {
+      padding: 0.75rem 1.8rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), var(--orange2));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(255,106,0,0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(255,106,0,0.5);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--orange);
+      border: 2px solid var(--orange);
+    }
+    .btn-outline:hover {
+      background: rgba(255,106,0,0.1);
+      transform: translateY(-3px);
+    }
+    /* ヒーロー画像 */
+    .hero-img-wrap {
+      flex-shrink: 0;
+      position: relative;
+      animation: fadeIn 1.2s ease 0.3s both;
+    }
+    .hero-img-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(var(--orange), var(--orange2), transparent, var(--orange));
+      animation: float 4s ease-in-out infinite;
+    }
+    .pulse-ring {
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      border: 2px solid var(--orange);
+      animation: pulse-ring 2.5s ease-out infinite;
+    }
+    .hero-img-wrap img {
+      width: clamp(180px, 22vw, 280px);
+      height: clamp(180px, 22vw, 280px);
+      border-radius: 50%;
+      object-fit: cover;
+      position: relative;
+      z-index: 1;
+      border: 4px solid var(--bg);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    /* ===== セクション共通 ===== */
+    section { padding: 100px 5%; }
+    .section-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 3rem;
+    }
+    .section-title span { color: var(--orange); }
+
+    /* ===== ギャラリーセクション ===== */
+    #gallery { background: var(--bg2); }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.2rem;
+    }
+    .gallery-item {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      cursor: pointer;
+    }
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .gallery-item::after {
+      content: '拡大';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,106,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-item:hover::after { opacity: 1; }
+
+    /* ライトボックス */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+    }
+    #lightbox.open { display: flex; animation: fadeIn 0.3s ease; }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: var(--radius);
+      border: 2px solid var(--orange);
+      object-fit: contain;
+    }
+    #lightbox-close {
+      position: absolute;
+      top: 1.5rem; right: 2rem;
+      font-size: 2rem;
+      color: var(--text);
+      cursor: pointer;
+      line-height: 1;
+      transition: color var(--transition);
+    }
+    #lightbox-close:hover { color: var(--orange); }
+
+    /* ===== スキルセクション ===== */
+    #skills { background: var(--bg); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-card {
+      background: var(--bg3);
+      border: 1px solid rgba(255,106,0,0.12);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    .skill-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--orange);
+      box-shadow: 0 12px 40px rgba(255,106,0,0.15);
+    }
+    .skill-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .skill-icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--orange), var(--orange2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .skill-name { font-weight: 700; font-size: 1rem; }
+    .skill-bar-bg {
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .skill-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--orange), var(--orange2));
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .skill-level {
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--orange);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* ===== 連絡先セクション ===== */
+    #contact { background: var(--bg2); }
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .contact-info h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .contact-info p { color: var(--text-muted); line-height: 1.8; }
+    .contact-detail {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .contact-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .contact-detail-item .icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(255,106,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    /* フォーム */
+    .contact-form {
+      background: var(--bg3);
+      border: 1px solid rgba(255,106,0,0.12);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255,106,0,0.15);
+    }
+    .form-group textarea { min-height: 130px; resize: vertical; }
+    .form-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, var(--orange), var(--orange2));
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(255,106,0,0.3);
+    }
+    .form-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(255,106,0,0.5);
+    }
+    .form-submit:active { transform: translateY(0); }
+    /* 送信完了メッセージ */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: var(--orange);
+      font-size: 1.1rem;
+      font-weight: 700;
+      animation: fadeUp 0.5s ease;
+    }
+
+    /* ===== フッター ===== */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid rgba(255,106,0,0.1);
+      text-align: center;
+      padding: 2rem 5%;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    footer span { color: var(--orange); }
+
+    /* ===== レスポンシブ ===== */
+    @media (max-width: 900px) {
+      .hero-inner { flex-direction: column-reverse; text-align: center; gap: 3rem; }
+      .hero-btns  { justify-content: center; }
+      .contact-wrap { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0 4%; }
+      .nav-links {
+        position: fixed;
+        top: 64px; left: 0; right: 0;
+        background: rgba(10,10,10,0.98);
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        border-bottom: 1px solid rgba(255,106,0,0.15);
+      }
+      .nav-links.open { max-height: 300px; }
+      .nav-links li { width: 100%; }
+      .nav-links a {
+        display: block;
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid rgba(255,255,255,0.05);
+      }
+      .nav-links a::after { display: none; }
+      .hamburger { display: flex; }
+      section { padding: 70px 4%; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 400px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ナビゲーション -->
+  <nav id="navbar">
+    <div class="nav-logo">チャッピー</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero"    onclick="closeMenu()">ホーム</a></li>
+      <li><a href="#gallery" onclick="closeMenu()">ギャラリー</a></li>
+      <li><a href="#skills"  onclick="closeMenu()">スキル</a></li>
+      <li><a href="#contact" onclick="closeMenu()">お問い合わせ</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ヒーローセクション -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-tag">✦ PORTFOLIO</div>
+        <h1 class="hero-title">
+          こんにちは、<br><span>チャッピー</span>です。
+        </h1>
+        <p class="hero-sub">
+          写真・クリエイティブ・デザインを愛する<br>ポートフォリオサイトへようこそ。
+        </p>
+        <div class="hero-btns">
+          <a href="#gallery" class="btn btn-primary">作品を見る</a>
+          <a href="#contact" class="btn btn-outline">連絡する</a>
+        </div>
+      </div>
+      <!-- ヒーロー画像：1枚目の写真を使用 -->
+      <div class="hero-img-wrap">
+        <div class="pulse-ring"></div>
+        <img src="picture/P1020046.JPG" alt="チャッピー" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ギャラリーセクション -->
+  <section id="gallery">
+    <p class="section-label reveal">Gallery</p>
+    <h2 class="section-title reveal">フォト<span>ギャラリー</span></h2>
+    <div class="gallery-grid">
+      <div class="gallery-item reveal" onclick="openLightbox('picture/FJ310012.JPG')">
+        <img src="picture/FJ310012.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/FJ310083.JPG')">
+        <img src="picture/FJ310083.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/FJ310084.JPG')">
+        <img src="picture/FJ310084.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020046.JPG')">
+        <img src="picture/P1020046.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020131.JPG')">
+        <img src="picture/P1020131.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020132.JPG')">
+        <img src="picture/P1020132.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020133.JPG')">
+        <img src="picture/P1020133.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020135.JPG')">
+        <img src="picture/P1020135.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020141.JPG')">
+        <img src="picture/P1020141.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020147.JPG')">
+        <img src="picture/P1020147.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020148.JPG')">
+        <img src="picture/P1020148.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020151.JPG')">
+        <img src="picture/P1020151.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020155.JPG')">
+        <img src="picture/P1020155.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1020157.JPG')">
+        <img src="picture/P1020157.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030513.JPG')">
+        <img src="picture/P1030513.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030574.JPG')">
+        <img src="picture/P1030574.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030578.JPG')">
+        <img src="picture/P1030578.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030580.JPG')">
+        <img src="picture/P1030580.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030583.JPG')">
+        <img src="picture/P1030583.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030622.JPG')">
+        <img src="picture/P1030622.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030629.JPG')">
+        <img src="picture/P1030629.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030639.JPG')">
+        <img src="picture/P1030639.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1030817.JPG')">
+        <img src="picture/P1030817.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1040165.JPG')">
+        <img src="picture/P1040165.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1040167.JPG')">
+        <img src="picture/P1040167.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1040768.JPG')">
+        <img src="picture/P1040768.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1050079.JPG')">
+        <img src="picture/P1050079.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1050165.JPG')">
+        <img src="picture/P1050165.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1050970.JPG')">
+        <img src="picture/P1050970.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1060301.JPG')">
+        <img src="picture/P1060301.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1060314.JPG')">
+        <img src="picture/P1060314.JPG" alt="photo" loading="lazy" />
+      </div>
+      <div class="gallery-item reveal" onclick="openLightbox('picture/P1060324.JPG')">
+        <img src="picture/P1060324.JPG" alt="photo" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ライトボックス（写真拡大表示） -->
+  <div id="lightbox">
+    <span id="lightbox-close" onclick="closeLightbox()">✕</span>
+    <img id="lightbox-img" src="" alt="拡大写真" />
+  </div>
+
+  <!-- スキルセクション -->
+  <section id="skills">
+    <p class="section-label reveal">Skills</p>
+    <h2 class="section-title reveal">スキル・<span>得意なこと</span></h2>
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-header">
+          <div class="skill-icon">📷</div>
+          <span class="skill-name">写真撮影</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar" data-level="90"></div>
+        </div>
+        <p class="skill-level">90%</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-header">
+          <div class="skill-icon">🎨</div>
+          <span class="skill-name">デザイン</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar" data-level="80"></div>
+        </div>
+        <p class="skill-level">80%</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-header">
+          <div class="skill-icon">✂️</div>
+          <span class="skill-name">写真編集・レタッチ</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar" data-level="85"></div>
+        </div>
+        <p class="skill-level">85%</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-header">
+          <div class="skill-icon">🌏</div>
+          <span class="skill-name">旅行・ロケ撮影</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar" data-level="95"></div>
+        </div>
+        <p class="skill-level">95%</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-header">
+          <div class="skill-icon">💡</div>
+          <span class="skill-name">ライティング（照明）</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar" data-level="75"></div>
+        </div>
+        <p class="skill-level">75%</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-header">
+          <div class="skill-icon">🎞️</div>
+          <span class="skill-name">動画編集</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar" data-level="70"></div>
+        </div>
+        <p class="skill-level">70%</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 連絡先フォームセクション -->
+  <section id="contact">
+    <p class="section-label reveal">Contact</p>
+    <h2 class="section-title reveal">お<span>問い合わせ</span></h2>
+    <div class="contact-wrap">
+      <!-- 左：案内文 -->
+      <div class="contact-info reveal">
+        <h3>お気軽にご連絡ください</h3>
+        <p>お仕事のご依頼やコラボレーションのご提案など、どんな些細なことでもお気軽にメッセージをお送りください。できる限り早めに返信いたします。</p>
+        <div class="contact-detail">
+          <div class="contact-detail-item">
+            <div class="icon">📍</div>
+            <span>日本</span>
+          </div>
+          <div class="contact-detail-item">
+            <div class="icon">📸</div>
+            <span>写真・デザイン・クリエイティブ全般</span>
+          </div>
+          <div class="contact-detail-item">
+            <div class="icon">⏰</div>
+            <span>平日 10:00〜18:00 対応</span>
+          </div>
+        </div>
+      </div>
+      <!-- 右：フォーム -->
+      <div class="reveal">
+        <form class="contact-form" id="contactForm" onsubmit="submitForm(event)">
+          <div class="form-group">
+            <label for="name">お名前</label>
+            <input type="text" id="name" placeholder="例）山田 太郎" required />
+          </div>
+          <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" id="email" placeholder="例）example@mail.com" required />
+          </div>
+          <div class="form-group">
+            <label for="subject">件名</label>
+            <input type="text" id="subject" placeholder="例）撮影依頼について" required />
+          </div>
+          <div class="form-group">
+            <label for="message">メッセージ</label>
+            <textarea id="message" placeholder="ご要件をお知らせください..." required></textarea>
+          </div>
+          <button type="submit" class="form-submit">送信する →</button>
+        </form>
+        <!-- 送信完了メッセージ -->
+        <div class="form-success" id="formSuccess">
+          ✅ メッセージを送信しました！<br>ありがとうございます。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <p>© 2026 <span>チャッピー</span>. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* ===== ナビゲーション：スクロールでシャドウ付加 ===== */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    /* ===== ハンバーガーメニュー ===== */
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.getElementById('navLinks');
+
+    function toggleMenu() {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    }
+    function closeMenu() {
+      hamburger.classList.remove('open');
+      navLinks.classList.remove('open');
+    }
+    // メニュー外タップで閉じる
+    document.addEventListener('click', (e) => {
+      if (!navbar.contains(e.target)) closeMenu();
+    });
+
+    /* ===== スクロールアニメーション（Intersection Observer） ===== */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          // スキルバーのアニメーションを開始
+          const bar = entry.target.querySelector('.skill-bar');
+          if (bar) {
+            bar.style.width = bar.dataset.level + '%';
+          }
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+
+    /* ===== ライトボックス ===== */
+    const lightbox     = document.getElementById('lightbox');
+    const lightboxImg  = document.getElementById('lightbox-img');
+
+    function openLightbox(src) {
+      lightboxImg.src = src;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden'; // 背景スクロール禁止
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    // 背景クリックで閉じる
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    // Escキーで閉じる
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    /* ===== 連絡先フォーム：送信デモ ===== */
+    function submitForm(e) {
+      e.preventDefault();
+      const form    = document.getElementById('contactForm');
+      const success = document.getElementById('formSuccess');
+      form.style.display    = 'none';
+      success.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
