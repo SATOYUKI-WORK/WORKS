@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>チャッピー | Portfolio</title>
+  <!-- OGP設定（LINEなどでシェア時の表示） -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="チャッピー | Portfolio" />
+  <meta property="og:description" content="チャッピーのポートフォリオサイトです。" />
+  <meta property="og:url"         content="https://tk2-212-15777.vs.sakura.ne.jp/app1/MyProject2/index.html" />
+  <meta property="og:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/MyProject2/picture/P1040768.JPG" />
   <style>
     /* ===== CSS変数・リセット ===== */
     :root {
@@ -330,6 +336,32 @@
     }
     .gallery-item:hover img { transform: scale(1.08); }
     .gallery-item:hover::after { opacity: 1; }
+    /* 動画アイテム */
+    .gallery-item video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .gallery-item.video::after { content: '再生'; }
+    .gallery-item.video:hover video { transform: scale(1.08); }
+    .video-badge {
+      position: absolute;
+      top: 0.6rem; left: 0.6rem;
+      background: rgba(255,106,0,0.85);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    #lightbox video {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: var(--radius);
+      border: 2px solid var(--orange);
+    }
 
     /* ライトボックス */
     #lightbox {
@@ -603,7 +635,7 @@
       <!-- ヒーロー画像：1枚目の写真を使用 -->
       <div class="hero-img-wrap">
         <div class="pulse-ring"></div>
-        <img src="picture/P1020046.JPG" alt="チャッピー" />
+        <img src="picture/P1040768.JPG" alt="チャッピー" />
       </div>
     </div>
   </section>
@@ -709,6 +741,29 @@
       <div class="gallery-item reveal" onclick="openLightbox('picture/P1060324.JPG')">
         <img src="picture/P1060324.JPG" alt="photo" loading="lazy" />
       </div>
+      <!-- 新規追加：画像 -->
+      <div class="gallery-item reveal" onclick="openLightbox('picture/1000008508.png')">
+        <img src="picture/1000008508.png" alt="photo" loading="lazy" />
+      </div>
+      <!-- 新規追加：動画 -->
+      <div class="gallery-item video reveal" onclick="openLightbox('picture/1000010837.mp4')">
+        <video muted autoplay loop playsinline>
+          <source src="picture/1000010837.mp4" type="video/mp4" />
+        </video>
+        <span class="video-badge">▶ 動画</span>
+      </div>
+      <div class="gallery-item video reveal" onclick="openLightbox('picture/1000010838.mp4')">
+        <video muted autoplay loop playsinline>
+          <source src="picture/1000010838.mp4" type="video/mp4" />
+        </video>
+        <span class="video-badge">▶ 動画</span>
+      </div>
+      <div class="gallery-item video reveal" onclick="openLightbox('picture/1000011823.mp4')">
+        <video muted autoplay loop playsinline>
+          <source src="picture/1000011823.mp4" type="video/mp4" />
+        </video>
+        <span class="video-badge">▶ 動画</span>
+      </div>
     </div>
   </section>
 
@@ -716,6 +771,7 @@
   <div id="lightbox">
     <span id="lightbox-close" onclick="closeLightbox()">✕</span>
     <img id="lightbox-img" src="" alt="拡大写真" />
+    <video id="lightbox-video" controls style="display:none;"></video>
   </div>
 
   <!-- スキルセクション -->
@@ -885,17 +941,30 @@
     document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
 
     /* ===== ライトボックス ===== */
-    const lightbox     = document.getElementById('lightbox');
-    const lightboxImg  = document.getElementById('lightbox-img');
+    const lightbox      = document.getElementById('lightbox');
+    const lightboxImg   = document.getElementById('lightbox-img');
+    const lightboxVideo = document.getElementById('lightbox-video');
 
     function openLightbox(src) {
-      lightboxImg.src = src;
+      const isVideo = src.endsWith('.mp4');
+      if (isVideo) {
+        lightboxImg.style.display   = 'none';
+        lightboxVideo.style.display = 'block';
+        lightboxVideo.src = src;
+        lightboxVideo.play();
+      } else {
+        lightboxVideo.style.display = 'none';
+        lightboxImg.style.display   = '';
+        lightboxImg.src = src;
+      }
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden'; // 背景スクロール禁止
     }
     function closeLightbox() {
       lightbox.classList.remove('open');
       document.body.style.overflow = '';
+      lightboxVideo.pause();
+      lightboxVideo.src = '';
     }
     // 背景クリックで閉じる
     lightbox.addEventListener('click', (e) => {
