@@ -426,6 +426,37 @@
       gap: 0.6rem;
     }
 
+    /* ── ジャンルセクション ── */
+    .genre-section { margin-top: 2.2rem; }
+    .genre-section:first-child { margin-top: 0; }
+
+    .genre-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.45em;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .genre-header .gh-tag {
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .genre-header .gh-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .genre-header .gh-count {
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
     /* ── スクロールバー ── */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
@@ -471,23 +502,59 @@
 </div>
 
 <script>
-  // ── 曲データ（music/ 配下のMP3ファイルに対応） ──
-  // バージョン番号（末尾の数字）でグループ化して表示
-  const tracks = [
-    { title: "Binary Carousel",         versions: [1, 2] },
-    { title: "Circuit Break Ritual",    versions: [1, 2] },
-    { title: "Clockwork Fracture",      versions: [1, 2] },
-    { title: "Concrete Roots Riddim",   versions: [1, 2] },
-    { title: "Event Horizon Fracture",  versions: [1, 2] },
-    { title: "Glitch In The Basement",  versions: [1, 2] },
-    { title: "Midnight Circuit Pursuit",versions: [1, 2] },
-    { title: "Midnight Rail Systems",   versions: [1, 2] },
-    { title: "Neon Gumbo Circuit",      versions: [1, 2] },
-    { title: "Neon Spine",              versions: [1, 2] },
-    { title: "Quantum Packet Chase",    versions: [2]    },
-    { title: "Steel Cathedral Overload",versions: [1, 2] },
-    { title: "Subterranean Amen Run",   versions: [1, 2] },
-    { title: "Untitled",                versions: [1]    },
+  // ── 曲データ（ジャンルごとに分類） ──
+  // ファイルパス: music/${genre.dir}/${track.title}${ver}.mp3
+  const genres = [
+    {
+      dir:    "1.ChipTune",
+      label:  "ChipTune",
+      tracks: [
+        { title: "8-bit motif, riser made of arpeggio step", versions: [1, 2] },
+        { title: "Artifacted Reality",      versions: [1, 2] },
+        { title: "Multithreaded Chaos",     versions: [1, 2] },
+        { title: "Pixel Bloom",             versions: [1, 2] },
+        { title: "Pixel Rush",              versions: [1, 2] },
+      ]
+    },
+    {
+      dir:    "2.Techno",
+      label:  "Techno",
+      tracks: [
+        { title: "Binary Carousel",            versions: [1, 2]       },
+        { title: "Circuit Break Ritual",       versions: [1, 2]       },
+        { title: "Concrete Roots Riddim",      versions: [1, 2]       },
+        { title: "Event Horizon Fracture",     versions: [1, 2]       },
+        { title: "Lonely Orbits",              versions: [1, 2]       },
+        { title: "Midnight Circuit Pursuit",   versions: [1, 2, 3, 4] },
+        { title: "Midnight Rail Systems",      versions: [1, 2]       },
+        { title: "Neon Spine",                 versions: [1, 2]       },
+        { title: "Quantum Packet Chase",       versions: [2]          },
+        { title: "Starlight Between Stations", versions: [1, 2]       },
+        { title: "Steel Cathedral Overload",   versions: [1, 2]       },
+        { title: "Subterranean Amen Run",      versions: [1, 2]       },
+        { title: "Untitled",                   versions: [1]          },
+      ]
+    },
+    {
+      dir:    "3.Glitch_hop",
+      label:  "Glitch Hop",
+      tracks: [
+        { title: "Clockwork Fracture",     versions: [1, 2] },
+        { title: "Glitch In The Basement", versions: [1, 2] },
+        { title: "Grainfire Protocol",     versions: [1, 2] },
+        { title: "Midnight Packet Loss",   versions: [1, 2] },
+        { title: "Neon Gumbo Circuit",     versions: [1, 2] },
+        { title: "Quantum Shuffle",        versions: [1, 2] },
+      ]
+    },
+    {
+      dir:    "4.Electronic_Swing",
+      label:  "Electronic Swing",
+      tracks: [
+        { title: "Glitch Carousel",      versions: [1, 2] },
+        { title: "Velvet Circuit Swing", versions: [1, 2] },
+      ]
+    },
   ];
 
   const elList    = document.getElementById("trackList");
@@ -498,123 +565,151 @@
   const elSearch  = document.getElementById("searchInput");
 
   let currentAudio = null;
-  let groups = []; // { el, title } の配列（検索フィルタ用）
+  let groups = []; // { el, title, genreDir } の配列（検索フィルタ用）
 
-  elTotal.textContent = tracks.length;
+  // 総曲数を集計
+  const totalTracks = genres.reduce((sum, g) => sum + g.tracks.length, 0);
+  elTotal.textContent = totalTracks;
 
   // アートワークは artwork/タイトル.jpg として事前抽出済み
 
-  // ── 各トラックグループを生成 ──
-  tracks.forEach((track, idx) => {
-    const group = document.createElement("div");
-    group.className = "track-group";
+  let globalIdx = 0; // 全ジャンル通しの曲番号
 
-    // ── サムネイル（ヘッダー用） ──
-    const thumb = document.createElement("div");
-    thumb.className = "track-thumb";
+  // ── ジャンルセクションごとに生成 ──
+  genres.forEach(genre => {
+    const section = document.createElement("div");
+    section.className = "genre-section";
+    genre.sectionEl = section; // 検索フィルタで参照
 
-    // ── ヘッダー ──
-    const header = document.createElement("div");
-    header.className = "track-header";
+    // ジャンルヘッダー
+    const genreHead = document.createElement("div");
+    genreHead.className = "genre-header";
+    genreHead.innerHTML =
+      `<span class="gh-tag">//</span>` +
+      `<span>${genre.label}</span>` +
+      `<span class="gh-line"></span>` +
+      `<span class="gh-count">${genre.tracks.length} TRACKS</span>`;
+    section.appendChild(genreHead);
 
-    const numEl   = document.createElement("span");
-    numEl.className = "track-num";
-    numEl.textContent = String(idx + 1).padStart(2, "0");
+    const trackListEl = document.createElement("div");
+    trackListEl.className = "track-list";
+    section.appendChild(trackListEl);
 
-    const nameEl  = document.createElement("span");
-    nameEl.className = "track-name";
-    nameEl.textContent = track.title;
+    // ── 各トラックグループを生成 ──
+    genre.tracks.forEach(track => {
+      globalIdx++;
+      const group = document.createElement("div");
+      group.className = "track-group";
 
-    const verEl   = document.createElement("span");
-    verEl.className = "ver-count";
-    verEl.textContent = `${track.versions.length}VER`;
+      // ── サムネイル（ヘッダー用） ──
+      const thumb = document.createElement("div");
+      thumb.className = "track-thumb";
 
-    const arrowEl = document.createElement("span");
-    arrowEl.className = "expand-arrow";
-    arrowEl.innerHTML = "&#9660;";
+      // ── ヘッダー ──
+      const header = document.createElement("div");
+      header.className = "track-header";
 
-    header.append(thumb, numEl, nameEl, verEl, arrowEl);
+      const numEl = document.createElement("span");
+      numEl.className = "track-num";
+      numEl.textContent = String(globalIdx).padStart(2, "0");
 
-    // ── バージョンパネル ──
-    const panel = document.createElement("div");
-    panel.className = "version-panel";
+      const nameEl = document.createElement("span");
+      nameEl.className = "track-name";
+      nameEl.textContent = track.title;
 
-    // 展開パネル内の大きいアートワーク枠
-    const panelArt = document.createElement("div");
-    panelArt.className = "panel-artwork";
+      const verEl = document.createElement("span");
+      verEl.className = "ver-count";
+      verEl.textContent = `${track.versions.length}VER`;
 
-    // バージョン一覧
-    const verRows = document.createElement("div");
-    verRows.className = "ver-rows";
+      const arrowEl = document.createElement("span");
+      arrowEl.className = "expand-arrow";
+      arrowEl.innerHTML = "&#9660;";
 
-    track.versions.forEach(ver => {
-      const src = `music/${track.title}${ver}.mp3`;
+      header.append(thumb, numEl, nameEl, verEl, arrowEl);
 
-      const row = document.createElement("div");
-      row.className = "ver-row";
+      // ── バージョンパネル ──
+      const panel = document.createElement("div");
+      panel.className = "version-panel";
 
-      const label = document.createElement("span");
-      label.className = "ver-label";
-      label.textContent = `VER.${ver}`;
+      // 展開パネル内の大きいアートワーク枠
+      const panelArt = document.createElement("div");
+      panelArt.className = "panel-artwork";
 
-      const audio = document.createElement("audio");
-      audio.src = src;
-      audio.controls = true;
-      audio.preload = "none";
+      // バージョン一覧
+      const verRows = document.createElement("div");
+      verRows.className = "ver-rows";
 
-      // 再生開始時の処理
-      audio.addEventListener("play", () => {
-        if (currentAudio && currentAudio !== audio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-        }
-        currentAudio = audio;
+      track.versions.forEach(ver => {
+        const src = `music/${genre.dir}/${track.title}${ver}.mp3`;
 
-        document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
-        group.classList.add("is-active");
+        const row = document.createElement("div");
+        row.className = "ver-row";
 
-        elNPName.textContent = `${track.title}  —  VER.${ver}`;
-        elNP.classList.add("visible");
+        const label = document.createElement("span");
+        label.className = "ver-label";
+        label.textContent = `VER.${ver}`;
+
+        const audio = document.createElement("audio");
+        audio.src = src;
+        audio.controls = true;
+        audio.preload = "none";
+
+        // 再生開始時の処理
+        audio.addEventListener("play", () => {
+          if (currentAudio && currentAudio !== audio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+          }
+          currentAudio = audio;
+
+          document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+          group.classList.add("is-active");
+
+          elNPName.textContent = `${track.title}  —  VER.${ver}`;
+          elNP.classList.add("visible");
+        });
+
+        audio.addEventListener("ended", () => {
+          elNP.classList.remove("visible");
+          group.classList.remove("is-active");
+        });
+
+        row.append(label, audio);
+        verRows.appendChild(row);
       });
 
-      audio.addEventListener("ended", () => {
-        elNP.classList.remove("visible");
-        group.classList.remove("is-active");
+      panel.append(panelArt, verRows);
+
+      // アコーディオン開閉
+      header.addEventListener("click", () => {
+        const wasOpen = group.classList.contains("is-open");
+        document.querySelectorAll(".track-group.is-open").forEach(g => g.classList.remove("is-open"));
+        if (!wasOpen) group.classList.add("is-open");
       });
 
-      row.append(label, audio);
-      verRows.appendChild(row);
+      group.append(header, panel);
+      trackListEl.appendChild(group);
+      groups.push({ el: group, title: track.title.toLowerCase(), genreDir: genre.dir });
+
+      // アートワーク画像（artwork/タイトル.jpg）を直接参照
+      const artSrc = `artwork/${track.title}.jpg`;
+
+      const thumbImg = document.createElement("img");
+      thumbImg.alt = track.title;
+      thumbImg.onload  = () => thumb.classList.add("loaded");
+      thumbImg.onerror = () => {};
+      thumbImg.src = artSrc;
+      thumb.appendChild(thumbImg);
+
+      const panelImg = document.createElement("img");
+      panelImg.alt = track.title;
+      panelImg.onload  = () => { panelArt.classList.add("loaded", "has-art"); };
+      panelImg.onerror = () => {};
+      panelImg.src = artSrc;
+      panelArt.appendChild(panelImg);
     });
 
-    panel.append(panelArt, verRows);
-
-    // アコーディオン開閉
-    header.addEventListener("click", () => {
-      const wasOpen = group.classList.contains("is-open");
-      document.querySelectorAll(".track-group.is-open").forEach(g => g.classList.remove("is-open"));
-      if (!wasOpen) group.classList.add("is-open");
-    });
-
-    group.append(header, panel);
-    elList.appendChild(group);
-    groups.push({ el: group, title: track.title.toLowerCase() });
-
-    // アートワーク画像（artwork/タイトル.jpg）を直接参照
-    const artSrc = `artwork/${track.title}.jpg`;
-
-    const thumbImg = document.createElement("img");
-    thumbImg.alt = track.title;
-    thumbImg.onload  = () => thumb.classList.add("loaded");
-    thumbImg.onerror = () => {}; // 画像なしはプレースホルダーのまま
-    thumbImg.src = artSrc;
-    thumb.appendChild(thumbImg);
-
-    const panelImg = document.createElement("img");
-    panelImg.alt = track.title;
-    panelImg.onload  = () => { panelArt.classList.add("loaded", "has-art"); };
-    panelImg.onerror = () => {};
-    panelImg.src = artSrc;
-    panelArt.appendChild(panelImg);
+    elList.appendChild(section);
   });
 
   updateVisible();
@@ -624,6 +719,13 @@
     const q = elSearch.value.trim().toLowerCase();
     groups.forEach(({ el, title }) => {
       el.style.display = title.includes(q) ? "" : "none";
+    });
+    // 全曲が非表示になったジャンルセクションを隠す
+    genres.forEach(genre => {
+      const anyVisible = groups
+        .filter(g => g.genreDir === genre.dir)
+        .some(g => g.el.style.display !== "none");
+      genre.sectionEl.style.display = anyVisible ? "" : "none";
     });
     updateVisible();
   });
