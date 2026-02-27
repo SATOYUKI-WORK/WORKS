@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER MELODIA</title>
+
+  <!-- OGP：LINE・SNSでシェアしたときのサムネイル設定 -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="CYBER MELODIA" />
+  <meta property="og:description" content="J-POP系トラック集" />
+  <meta property="og:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CyberMelodia/samune.jpg" />
+  <meta property="og:url"         content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CyberMelodia/" />
+  <meta property="og:site_name"   content="CYBER MELODIA" />
+
+  <!-- Twitter Card（X・Discordなどでも有効） -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="CYBER MELODIA" />
+  <meta name="twitter:description" content="J-POP系トラック集" />
+  <meta name="twitter:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CyberMelodia/samune.jpg" />
+
+  <style>
+    /* ── リセット & CSS変数 ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #100810;
+      --bg2:        #1a0e1a;
+      --bg3:        #221525;
+      --pink:       #ff6eb4;
+      --pink-dim:   rgba(255,110,180,0.45);
+      --pink-faint: rgba(255,110,180,0.08);
+      --lavender:   #c084fc;
+      --text:       #d8b0cc;
+      --text-hi:    #f8d8f0;
+      --text-dim:   #704060;
+      --border:     #3a1a38;
+      --border-hi:  #5a2a55;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,110,180,0.012) 2px,
+        rgba(255,110,180,0.012) 4px
+      );
+    }
+
+    /* 背景グロー */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 50% at 50% -5%, rgba(255,110,180,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 90% 90%,  rgba(192,132,252,0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── ヘッダー ── */
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 4rem 1rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-prefix {
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .site-title {
+      font-size: clamp(2.2rem, 7vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--pink);
+      text-shadow:
+        0 0 6px var(--pink),
+        0 0 20px var(--pink-dim),
+        0 0 60px rgba(255,110,180,0.15);
+      animation: glitch 9s infinite;
+    }
+
+    @keyframes glitch {
+      0%,93%,100% { clip-path: none; transform: none; color: var(--pink); }
+      94% {
+        clip-path: polygon(0 15%, 100% 15%, 100% 38%, 0 38%);
+        transform: translate(-4px, 1px);
+        color: var(--lavender);
+        text-shadow: 0 0 6px var(--lavender), 0 0 20px rgba(192,132,252,0.5);
+      }
+      95.5% {
+        clip-path: polygon(0 60%, 100% 60%, 100% 82%, 0 82%);
+        transform: translate(4px, -1px);
+        color: var(--pink);
+      }
+      96% { clip-path: none; transform: none; }
+    }
+
+    .site-sub {
+      margin-top: 0.6rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.45em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── メインコンテナ ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem 6rem;
+    }
+
+    /* ステータスバー */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .status-bar .val { color: var(--pink); }
+
+    .sep { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── 検索ボックス ── */
+    .search-wrap {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .search-wrap::before {
+      content: '♪';
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--pink);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text-hi);
+      font-family: inherit;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      padding: 0.65rem 1rem 0.65rem 2rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #searchInput::placeholder { color: var(--text-dim); }
+    #searchInput:focus { border-color: var(--pink-dim); }
+
+    /* ── トラックリスト ── */
+    .track-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .track-group {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .track-group:hover { border-color: var(--border-hi); }
+
+    .track-group.is-active,
+    .track-group.is-open {
+      border-left-color: var(--pink);
+      background: var(--bg3);
+      border-color: var(--border-hi);
+    }
+
+    /* トラックヘッダー */
+    .track-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.2rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .track-num {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      min-width: 2ch;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* サムネイル */
+    .track-thumb {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .track-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .track-thumb::after {
+      content: '♡';
+      position: absolute;
+      font-size: 1rem;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .track-thumb.loaded::after { display: none; }
+
+    .track-name {
+      flex: 1;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      color: var(--text-hi);
+      transition: color 0.15s, text-shadow 0.15s;
+    }
+
+    .track-group.is-active .track-name,
+    .track-group.is-open .track-name {
+      color: var(--pink);
+      text-shadow: 0 0 12px var(--pink-dim);
+    }
+
+    .expand-arrow {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .track-group.is-open .expand-arrow { transform: rotate(180deg); }
+
+    /* ── プレイヤーパネル（展開時） ── */
+    .player-panel {
+      display: none;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 0 1.2rem 1rem 3.2rem;
+    }
+
+    .track-group.is-open .player-panel { display: flex; }
+
+    /* 展開パネル内アートワーク */
+    .panel-artwork {
+      display: none;
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      align-self: flex-start;
+      position: relative;
+    }
+
+    .panel-artwork img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .panel-artwork::after {
+      content: '♡';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--text-dim);
+    }
+
+    .panel-artwork.loaded::after { display: none; }
+    .panel-artwork.has-art { display: block; }
+
+    /* HTML5 audioプレイヤー */
+    audio {
+      width: 100%;
+      height: 26px;
+      outline: none;
+      color-scheme: dark;
+      filter: hue-rotate(300deg) saturate(1.5) brightness(0.88);
+    }
+
+    .audio-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    /* ── 歌詞ブロック ── */
+    .lyrics-block {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding-top: 0.8rem;
+      font-size: 0.82rem;
+      line-height: 2;
+      color: var(--text);
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .lyrics-block.has-lyrics { display: block; }
+
+    /* セクションラベル（[Chorus] など） */
+    .lyrics-section {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--pink);
+      margin-top: 0.9rem;
+      margin-bottom: 0.1rem;
+    }
+
+    .lyrics-section:first-child { margin-top: 0; }
+
+    /* 空行スペーサー */
+    .lyrics-blank { height: 0.4rem; }
+
+    /* ── NOW PLAYINGバー（画面下部固定） ── */
+    .now-playing {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(16,8,16,0.96);
+      border-top: 1px solid var(--pink-dim);
+      padding: 0.6rem 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 -4px 40px rgba(255,110,180,0.08);
+    }
+
+    .now-playing.visible { display: flex; }
+
+    .np-pulse {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--pink);
+      box-shadow: 0 0 8px var(--pink), 0 0 20px var(--pink-dim);
+      flex-shrink: 0;
+      animation: blink 1.1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.25; }
+    }
+
+    .np-tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .np-name {
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      color: var(--pink);
+      text-shadow: 0 0 10px var(--pink-dim);
+    }
+
+    /* ── フッター ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      text-transform: uppercase;
+    }
+
+    /* ── ジャンルセクション ── */
+    .genre-section { margin-top: 2.2rem; }
+    .genre-section:first-child { margin-top: 0; }
+
+    .genre-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.45em;
+      color: var(--pink);
+      text-transform: uppercase;
+    }
+
+    .genre-header .gh-tag  { color: var(--text-dim); flex-shrink: 0; }
+    .genre-header .gh-line { flex: 1; height: 1px; background: var(--border); }
+    .genre-header .gh-count{ color: var(--text-dim); flex-shrink: 0; }
+
+    /* ── スクロールバー ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hi); }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="logo-prefix">// AUDIO ARCHIVE //</p>
+  <h1 class="site-title">CYBER MELODIA</h1>
+  <p class="site-sub">SYSTEM ONLINE — STREAMING ENABLED</p>
+</header>
+
+<main>
+  <div class="status-bar">
+    <span>TRACKS: <span class="val" id="totalCount">0</span></span>
+    <span>VISIBLE: <span class="val" id="visibleCount">0</span></span>
+    <div class="sep"></div>
+    <span>SYS://MUSIC_DIR</span>
+  </div>
+
+  <div class="search-wrap">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="SEARCH TRACKS..."
+      autocomplete="off"
+      spellcheck="false"
+    />
+  </div>
+
+  <div class="track-list" id="trackList"></div>
+</main>
+
+<footer>SYS://CYBER_MELODIA &nbsp;|&nbsp; ALL RIGHTS RESERVED</footer>
+
+<!-- NOW PLAYINGバー -->
+<div class="now-playing" id="nowPlaying">
+  <span class="np-pulse"></span>
+  <span class="np-tag">NOW PLAYING</span>
+  <span class="np-name" id="npName">—</span>
+</div>
+
+<script>
+  // ── 歌詞データ（lyrics/*.txt をそのまま埋め込み） ──
+  // 曲名をキーに歌詞テキストを格納。ファイルを追加したらここにも追記する。
+  const lyricsData = {
+
+    "キラキラ everyday":
+`[Verse 1]
+朝の光に 目を覚ます
+コーヒーの香り ふわりと広がる
+いつもの道も 今日はなんだか
+ちょっとだけ 輝いて見えた
+
+[Pre-Chorus]
+完璧じゃなくていい
+そのままでいい
+小さな幸せ 集めていこう
+
+[Chorus]
+キラキラ everyday
+今日も最高の一日にしよう
+La la la, shine on
+笑顔ひとつで 世界が変わる
+キラキラ everyday
+何があっても 前を向いていく
+It's my life, yeah
+(私らしく 輝いていたい)
+
+[Verse 2]
+失敗したって 大丈夫
+また明日から やり直せばいい
+誰かの笑顔 もらったとき
+ちょっとだけ 強くなれた気がした
+
+[Pre-Chorus]
+急がなくていい
+焦らなくていい
+自分のペースで 歩いていこう
+
+[Chorus]
+キラキラ everyday
+今日も最高の一日にしよう
+La la la, shine on
+笑顔ひとつで 世界が変わる
+キラキラ everyday
+何があっても 前を向いていく
+It's my life, yeah
+(私らしく 輝いていたい)
+
+[Bridge]
+雨の日だって 悪くない
+虹を待つ時間も 好きだから
+どんな景色も 全部ぜんぶ
+私の story になっていく
+
+[Chorus]
+キラキラ everyday
+今日も最高の一日にしよう
+La la la, shine on
+笑顔ひとつで 世界が変わる
+キラキラ everyday
+何があっても 前を向いていく
+It's my life, yeah
+(私らしく 輝いていたい)
+
+[Outro]
+La la la...
+キラキラ everyday
+ずっとずっと 輝き続けよう`,
+
+    "未来色グラフィティ":
+`[Intro]
+(明るいピアノとギターのイントロ)
+(1, 2, 3, Go!)
+
+[Verse 1]
+窓を開けたら　眩しい太陽
+新しい風が　通り抜けてく
+お気に入りの靴　履いて出かけよう
+予感に弾む　僕らのステップ
+
+[Verse 2]
+昨日の悩みは　脱ぎ捨てちゃって
+カラフルな世界　見つけに行こう
+何が起きるかな？　ワクワクしちゃう
+君の笑顔が　見たいから
+
+[Pre-Chorus]
+迷ってないで　飛び込んでみよう
+世界はこんなに　輝いてる
+深呼吸して　準備はOK？
+最高のストーリー　始めよう！
+
+[Chorus]
+キラキラ輝く　毎日にしよう！
+笑い声が　空に響くよ
+ハッピーな魔法を　振りまきながら
+どこまでも　行ける気がするんだ
+未来は　僕らの手の中に！
+
+[Bridge]
+たまには雨も　降るけれど
+虹がかかるのを　待てばいい
+一緒なら　強くなれるよ
+ずっと　このままで
+
+[Guitar Solo]
+
+[Chorus]
+キラキラ輝く　毎日にしよう！
+笑い声が　空に響くよ
+ハッピーな魔法を　振りまきながら
+どこまでも　行ける気がするんだ
+未来は　僕らの手の中に！
+
+[Outro]
+La la la... 最高な一日
+(Yeah!)
+[End]`,
+
+    "笑顔スイッチ":
+`[Verse 1]
+朝のカーテン　光がダンスして
+寝ぐせのままでも　なんかイケてる気がした
+コンビニのラテ　ふわっと甘くて
+「今日こそいい日」って　心が言ったんだ
+
+[Pre-Chorus]
+小さな予定が　増えてくたびに
+世界は少しずつ　カラフルになる
+失敗だって　笑い話にして
+次のページ　めくろう！
+
+[Chorus]
+キラキラ　きょうも　走り出せるよ
+胸のドキドキ　リズムに変えて
+ハイタッチみたいに　風とすれ違って
+「大丈夫」って　空に言おう
+ワクワク　もっと　近づいてくる
+夢はいつでも　味方でいて
+どんな一日も　主役はわたし
+キラキラ　きょうも　最高！
+
+[Verse 2]
+駅のホームで　流れるメロディ
+知らない誰かも　口ずさんでた
+迷った道でも　遠回りでも
+景色が増えたら　それで正解だ
+
+[Pre-Chorus]
+好きな自分を　ちゃんと選びたい
+比べるより　信じていたい
+涙のあとに　虹が出るみたいに
+笑顔は戻ってくる
+
+[Chorus]
+キラキラ　きょうも　飛び跳ねたいよ
+小さな勇気を　ポケットに入れて
+「またね」って手を振る　未来のわたしへ
+一歩ずつ　進めばいい
+ドキドキ　ずっと　鳴り止まないで
+この瞬間が　宝物だね
+どんな一日も　主役はわたし
+キラキラ　きょうも　最高！
+
+[Bridge]
+落ち込む日もある　だけど知ってる
+「好き」がひとつあれば　強くなれる
+君の笑顔が　わたしの魔法
+一緒に歌おう！
+
+[Final Chorus]
+キラキラ　きょうも　走り出せるよ
+胸のドキドキ　リズムに変えて
+ハイタッチみたいに　風とすれ違って
+「大丈夫」って　空に言おう
+ワクワク　もっと　近づいてくる
+夢はいつでも　味方でいて
+どんな一日も　主役はわたし
+キラキラ　きょうも　最高！`,
+
+    "Pixel Booster!":
+`[Intro]
+ピッ　ピッ　ピコピコ
+起動音が鳴る
+Ready? Set! Go!
+
+[Verse 1]
+朝イチのログイン　光るステージ
+指先でジャンプ　バグも味方にして
+エラーもノイズも　キラッて変換
+今日の私　最強アップデート
+
+[Pre-Chorus]
+ハートのクロック　針を早めて
+0と1の間で　夢が踊る
+「行ける！」って　声が響いたら
+世界はちゃんと　ついてくる
+
+[Chorus]
+ピクセルの翼で　Fly high!
+ハイテンション　止まらない
+キックで鼓動が　Drive! Drive!
+笑顔をオーバークロック
+テクノの波に　乗っちゃって
+チップの星を　駆け抜けて
+未来へ　Boost! Boost!
+"Hello, new world!" 叫べ！
+
+[Verse 2]
+街のネオンみたい　8bitの夢
+四角いメロディ　胸を叩く
+ため息さえも　シンセに変えて
+私のリズムで　前へ進む
+
+[Pre-Chorus 2]
+パラメータ上げて　限界突破
+不安はミュート　希望を上げる
+「大丈夫」って　自分に言えば
+明日はきっと　もっと速い
+
+[Chorus]
+ピクセルの翼で　Fly high!
+ハイテンション　止まらない
+ベースがうねって　Dive! Dive!
+心をフルスロットル
+テクノの夜を　照らし出せ
+チップの虹を　描き出せ
+未来へ　Boost! Boost!
+"Hello, new world!" 叫べ！
+
+[Bridge]
+ピコピコ　瞬く　夢の座標
+迷っても　リスポーンできる
+何度だって　スタートライン
+私の音で　進め！
+
+[Final Chorus]
+ピクセルの翼で　Fly high!
+ハイテンション　止まらない
+キックで鼓動が　Drive! Drive!
+笑顔をオーバークロック
+テクノの波に　乗っちゃって
+チップの星を　駆け抜けて
+未来へ　Boost! Boost!
+"Hello, new world!" 叫べ！
+
+[Outro]
+ピッ　ピッ　ピコピコ
+Good night…じゃない
+We keep on dancing!`,
+
+    "デジタル・ダイバー":
+`[Intro]
+(Fast 8-bit arpeggio and techno beat)
+(3, 2, 1, GO!)
+
+[Verse 1]
+ログイン完了！超速でダイブ！
+七色の回廊を駆け抜けて
+デジタルな波に乗って
+無限のエリア目指して
+
+[Pre-Chorus]
+0と1の隙間抜けて
+加速する回路　止まらない
+(Ready?)
+
+[Chorus]
+キラめくコード追い越して
+(Go! Go! ミライへ！)
+友情のデータ握って
+(Go! Go! ミライへ！)
+限界なんて飛び越えて
+READY GO! スキップ and フライ！
+
+[Drop]
+(High-speed Chiptune solo)
+
+[Outro]
+接続維持　また明日
+(Connection complete)
+[End]`,
+
+    "ピコピコドリーム":
+`[Intro]
+ピコピコ鳴り響く 世界の始まり
+データが踊り出す 今夜もフルスロットル
+
+[Verse 1]
+朝日も待たずに 起動するワタシ
+画面の向こうで 夢が走り出す
+コードを刻んで リズムを組んで
+止まれないビートが 心を叩いてる
+
+[Pre-Chorus]
+エラーなんか怖くない
+リトライ無限大
+可能性は無限大 さあ行こう！
+
+[Chorus]
+ピコピコ ドキドキ 加速してく夜
+チップチューンの旋律 空へと飛んでけ
+テクノビート 刻んで 限界ぶっこわして
+ワタシだけのステージ 今 輝けー！
+
+[Verse 2]
+迷子のデータも 拾って走ってく
+バグさえも仲間に 変えてしまうから
+ビットの海泳ぎ 夢の地図広げ
+誰にも止められない ワタシだけの歌
+
+[Pre-Chorus]
+ノイズなんか怖くない
+音量マックスで
+全部ぶつけていくから さあ行こう！
+
+[Chorus]
+ピコピコ ドキドキ 加速してく夜
+チップチューンの旋律 空へと飛んでけ
+テクノビート 刻んで 限界ぶっこわして
+ワタシだけのステージ 今 輝けー！
+
+[Bridge]
+（ピコ ピコ ピコ ピコ）
+どこまでも どこまでも
+（ビート ビート ビート ビート）
+とまらない とまらない
+全部全部全部 ぜんぶ燃やして！
+
+[Final Chorus]
+ピコピコ ドキドキ 加速してく夜
+チップチューンの旋律 空へと飛んでけ
+テクノビート 刻んで 限界ぶっこわして
+ワタシだけのステージ 今 輝けー！
+
+[Outro]
+ピコピコ鳴り響く 世界の続きへ
+データが歌ってる ずっとずっと…`,
+
+    "Midnight Brass Riot":
+`[Intro]
+(Scratch noise)
+(Upbeat brass fanfare)
+Ladies and Gentlemen...
+Welcome to the neon ballroom.
+Are you ready? Let's go!
+
+[Verse 1]
+蓄音機から溢れ出す　このビート
+シルクハットなびかせ　踏み出すリード
+モノクロの街を　塗り替える色彩
+重低音が揺らす　この時代の正解
+揺れるサスペンダー　刻むStep
+誰も止められない　このマインドセット
+過去と未来を繋ぐ　このフロア
+鍵は開いたぜ　禁断のドア！
+
+[Pre-Chorus]
+(Brass swells)
+指を鳴らせば　世界が弾ける
+心拍数（BPM）上げて　もっと加速して
+1, 2, 3, Swing!
+
+[Chorus]
+踊れ　回るレコードの端っこで
+響け　電子の波（ウェーブ）に乗っかって
+It's Electro Swing!　止まらない高揚感
+It's Electro Swing!　最高の解放感
+弾けるブラス　跳ねるベースライン
+今夜の主役は　譲れないTime!
+
+[Verse 2 - Fast Rap]
+(Fast-paced rhythm)
+右に左にステップ　縦横無尽
+ヴィンテージな風に吹かれ　夢中人
+スキップして　フリップして　言葉の弾丸
+ノリの良さなら　余裕で天元突破
+スウィングしなけりゃ　意味がない
+理屈じゃねえ　この熱い鼓動（パルス）が止まらない！
+
+[Bridge]
+(Slower, jazzy piano solo)
+(Deep breath sound)
+Wait...
+(Sudden beat drop)
+(Fast scat singing: Da-ba-da-ba-doo-wop!)
+Bring it back!
+
+[Chorus]
+踊れ　回るレコードの端っこで
+響け　電子の波（ウェーブ）に乗っかって
+It's Electro Swing!　止まらない高揚感
+It's Electro Swing!　最高の解放感
+弾けるブラス　跳ねるベースライン
+今夜の主役は　譲れないTime!
+
+[Outro]
+Yeah, keep it swinging.
+Classic but New.
+(Brass solo fading out)
+(Vinyl scratch)
+Good night.
+
+[End]`,
+
+    "Neon Diva\u2019s Flow":
+`[Intro]
+(Vinyl crackle)
+(Upbeat brass explosion)
+Are you ready for the show?
+One, two... Step into my world!
+
+[Verse 1]
+ヒールを鳴らして　石畳をJump
+退屈な夜には　強めのトランプ
+蓄音機が歌う　最新のフロー
+私に合わせな　Follow the glow
+モノクロの世界　脱ぎ捨ててRun
+今夜のルールは　楽しんだもん勝ち（Fun）
+煌めくドレス　乱してステップ
+誰も追いつけない　このコンセプト！
+
+[Pre-Chorus]
+(Bass drop)
+(Brass stabs)
+指先一つで　火を灯して
+瞬き禁止の　スペクタクル
+3, 2, 1, Swing it!
+
+[Chorus]
+踊れ　回るレコードの端っこで
+響け　電子の波（ウェーブ）に乗っかって
+It's Electro Swing!　止まらない高揚感
+It's Electro Swing!　最高の解放感
+弾けるブラス　跳ねるベースライン
+今夜の主役は　譲れないTime!
+
+[Verse 2 - Fast Rap]
+(Percussive, high-speed rhythm)
+右に左に　惑わす視線
+ヴィンテージな風　纏って次元
+超えてくスピード　1, 2, 3, Go!
+ライムを刻んで　上げるボルテージ
+スウィングしなけりゃ　意味がない
+私の鼓動（パルス）は　誰にも止められない！
+
+[Bridge]
+(Jazzy, smoky piano melody)
+(Whisper: "Shall we dance?")
+(Fast scat singing: Shoo-bee-doo-wop-ba-da-da!)
+One more time, louder!
+
+[Chorus]
+踊れ　回るレコードの端っこで
+響け　電子の波（ウェーブ）に乗っかって
+It's Electro Swing!　止まらない高揚感
+It's Electro Swing!　最高の解放感
+弾けるブラス　跳ねるベースライン
+今夜の主役は　譲れないTime!
+
+[Outro]
+Keep on swinging, baby.
+Don't stop the magic.
+(Bright brass crescendo)
+(Grand finale)
+Bye-bye!
+
+[End]`,
+
+    "Neon Queen":
+`[Verse 1]
+ヒールの音が　夜に響く
+レッドリップで　舞台に立つ
+ジャズが流れる　ネオンの下
+あたしのステージ　さあ始まる
+
+トランペットが呼ぶ　ベースが誘う
+誰も追いつけない　このスピードで
+スウィングするわ　止まれやしない
+この街全部　あたしのもの
+
+[Hook]
+Hey Hey Hey — 夜を踊れ
+Hey Hey Hey —声を上げろ
+スウィングしながらラップする
+誰も止められない　このグルーヴ
+
+[Chorus]
+Queen of the Night　街を駆ける
+ブラスの音に　魂揺れる
+古くて新しい　このビートで
+朝まで行こうぜ　止まらないで
+
+[Verse 2]
+マイク握れば　空気が変わる
+ヴィンテージとモダン　あたしが繋ぐ
+1920sのスウィングに
+2020sのフロウ　乗せて刻む
+
+ドレスが揺れる　スポットライト
+全員惚れてる　ワンビートで
+サックスが叫ぶ　ドラムが走る
+この瞬間だけが　リアルだから
+
+[Hook]
+Hey Hey Hey — 夜を踊れ
+Hey Hey Hey —声を上げろ
+スウィングしながらラップする
+誰も止められない　このグルーヴ
+
+[Chorus]
+Queen of the Night　街を駆ける
+ブラスの音に　魂揺れる
+古くて新しい　このビートで
+朝まで行こうぜ　止まらないで
+
+[Bridge]
+時代を超えた　このサウンド
+過去と未来が　今ここで交わる
+ワンツースリーフォー　踏み鳴らせ
+誰もが踊るまで　あたしは止まらない
+
+[Outro - Rap]
+Yeah — これがQueen of the Nightのスタイル
+ジャズもラップも　全部あたしのもの
+スウィングしながら　未来へ走る
+夜が明けるまで　このビートとともに`,
+
+    "Unbroken":
+`[Verse 1]
+朝の光が窓を叩く
+眠れなかった夜を越えて
+折れそうになった何度も
+それでも立ち上がってきた
+
+迷いの中で見つけた答え
+自分の声を信じること
+遠くに見える頂上へ
+この足で歩いていく
+
+[Pre-Chorus]
+怖くていい　震えていい
+それでも前を向けるから
+
+[Chorus]
+叫べ　魂の声を
+誰にも消せない炎がある
+走れ　風を切り裂いて
+この道は俺が選んだ道だから
+諦めた夢なんてひとつもない
+今日もここから始まる
+
+[Verse 2]
+傷ついた言葉も痛みも
+全部が今の俺を作った
+孤独な夜に見上げた星が
+道しるべになっていたんだ
+
+失敗を恐れるより
+挑んだ自分を誇れ
+何度転んでもいい
+また立てばそれでいい
+
+[Pre-Chorus]
+弱くていい　泣いていい
+それでも歩みは止めないから
+
+[Chorus]
+叫べ　魂の声を
+誰にも消せない炎がある
+走れ　風を切り裂いて
+この道は俺が選んだ道だから
+諦めた夢なんてひとつもない
+今日もここから始まる
+
+[Bridge]
+たとえ世界が背を向けても
+お前の中に答えはある
+限界なんて超えてきた
+証明するのは今この瞬間
+
+[Final Chorus]
+叫べ　限界の向こうへ
+燃え上がれ　消えない炎よ
+走れ　誰かのためじゃなく
+自分の未来　自分で掴むために
+どんな夜も必ず明けると知ってるから
+さあ　走り出せ　今すぐに`,
+
+    "WINGS":
+`[Verse 1]
+曇り空の朝に目が覚めた
+また同じ不安が胸をよぎる
+それでもあなたの声が聞こえた
+「大丈夫、もう一度立てるよ」って
+
+泣いた分だけ強くなれると
+誰かが言ってたあの日を思い出す
+傷跡は弱さじゃなくて
+ここまで生きてきた証だから
+
+[Pre-Chorus]
+怖くて当たり前　迷って当たり前
+それでも心が叫んでる
+
+[Chorus]
+飛び出せ　この空の果てまで
+折れない翼があなたにはある
+輝け　誰かのためじゃなく
+自分だけの光を信じて
+どんなに暗い夜も終わりがくる
+さあ　今こそ羽ばたいて
+
+[Verse 2]
+うまくいかない日が続いても
+ゼロじゃない　前には進んでる
+比べることに疲れたなら
+自分のペースでいい、それでいい
+
+夢が遠くて霞んで見えても
+目を閉じれば鮮明に浮かぶ
+あの日描いた景色の中で
+私はまだちゃんと笑ってる
+
+[Pre-Chorus]
+弱くて当たり前　泣いて当たり前
+それでも諦めたくないから
+
+[Chorus]
+飛び出せ　この空の果てまで
+折れない翼があなたにはある
+輝け　誰かのためじゃなく
+自分だけの光を信じて
+どんなに暗い夜も終わりがくる
+さあ　今こそ羽ばたいて
+
+[Bridge]
+完璧じゃなくていい
+全部持ってなくていい
+ただひとつ　前を向く気持ちだけ
+それだけで十分だから
+
+[Final Chorus]
+飛び出せ　限界なんて超えて
+あなたにしか出せない声がある
+輝け　傷ついた日々ごと
+全部抱きしめて走り出そう
+夜明けはいつだって待ってくれてる
+さあ　今すぐ飛び立とう`,
+
+    "アカリトビラ":
+`[Intro]
+(Distorted guitar riff, fast drum build-up)
+
+[Verse 1]
+見慣れた景色に　線を引いて
+昨日の自分を　脱ぎ捨てていく
+向かい風さえも　羽に変えて
+高鳴る鼓動が　地図を書き換える
+
+[Pre-Chorus]
+迷いも涙も　無駄じゃないから
+すべての欠片（ピース）が　今　光を放つ
+
+[Chorus]
+響け　僕らの明日への歌
+曇り空を　突き抜けて
+希望という名の　帆を掲げて
+未完成のまま　駆け出そう
+セカイは　ここから変わる
+
+[Verse 2]
+正解なんて　どこにもなくて
+泥だらけの靴が　誇らしかった
+立ち止まるたびに　見つけたのは
+側にいてくれる　君の横顔
+
+[Bridge]
+何度転んでも　また立ち上がれば
+それが新しい　始まりの合図
+
+[Guitar Solo]
+(Emotional and technical guitar solo)
+
+[Chorus]
+響け　僕らの明日への歌
+曇り空を　突き抜けて
+希望という名の　帆を掲げて
+未完成のまま　駆け出そう
+セカイは　ここから変わる
+
+[Outro]
+(Fast guitar strumming, powerful drum finish)
+Woah, Oh-Oh...
+光の射す方へ
+
+[End]`,
+
+    "キャンバス":
+`[Intro]
+夜明け前の空に　息をひとつ
+震える手でもいい　進め
+
+[Verse 1]
+うまく笑えない日も
+言葉が喉に刺さる夜も
+「ここまで来た」って足跡が
+ちゃんと背中を押してる
+
+[Pre-Chorus]
+迷いは消えないまま
+それでも光の方へ
+小さな火を抱いて
+
+[Chorus]
+走れ　走れ　風を切って
+未来はまだ白いキャンバス
+怖さごと　抱きしめて
+今日の一歩が明日を変える
+叫べ　叫べ　胸の奥で
+希望はいつもここにある
+傷だらけのままでも
+立ち上がるたび強くなる
+
+[Verse 2]
+誰かの正しさより
+自分の"願い"を信じたい
+遠回りでも構わない
+僕の速度で行けばいい
+
+[Pre-Chorus 2]
+雲の切れ間に
+差し込む光みたいに
+答えは動き出す
+
+[Chorus]
+走れ　走れ　風を切って
+未来はまだ白いキャンバス
+怖さごと　抱きしめて
+今日の一歩が明日を変える
+叫べ　叫べ　胸の奥で
+希望はいつもここにある
+涙の跡があっても
+笑える日まで進め
+
+[Bridge]
+失うことを恐れて
+止まった時間もあった
+でもここにいる僕は
+あの日の僕が望んだ姿だ
+もう一度　息を吸って
+空を見上げろ
+
+[Final Chorus]
+走れ　走れ　夢を連れて
+未来は今　塗り替えられる
+迷いごと　連れていけ
+その痛みは証になる
+叫べ　叫べ　声の限り
+希望はいつもここにある
+どんな夜が来たとしても
+夜明けは必ず　迎えに来る
+
+[Outro]
+進め　進め
+僕らはまだ　終わらない`,
+
+    "プリズム・ステップ":
+`[Intro]
+(Bright piano melody, followed by a powerful guitar riff and fast drums)
+
+[Verse 1]
+モノクロの朝　鏡に映る
+少しだけ　自信のない私
+深呼吸ひとつ　靴紐を結び
+新しい世界へ　鍵をかける
+
+[Verse 2]
+教科書通りの　答えじゃなくて
+ココロが動く　方角へ行こう
+雨上がりの街　きらめく水たまり
+飛び越えた瞬間　風が踊り出す
+
+[Pre-Chorus]
+何百回　迷ったっていい
+そのすべてが　今の私を支えてる
+
+[Chorus]
+描け　どこまでも続くキャンバスに
+プリズムの光　集めて
+昨日までの涙さえ　武器にして
+「最高」を更新し続けるよ
+止まらない　鼓動を信じて
+
+[Bridge]
+[Instrumental]
+(Fast and melodic guitar solo with upbeat piano backings)
+遠くで聞こえる　はじまりの合図
+もう　後ろは振り返らない
+
+[Chorus]
+描け　どこまでも続くキャンバスに
+プリズムの光　集めて
+昨日までの涙さえ　武器にして
+「最高」を更新し続けるよ
+止まらない　鼓動を信じて
+
+[Outro]
+(Uplifting guitar strumming, fading out with a final piano note)
+La la la... 踏み出そう
+光の向こうへ
+
+[End]`,
+
+    "風をつかんで":
+`[Intro]
+深呼吸ひとつで
+世界はまだ変えられる
+
+[Verse 1]
+うまくいかない朝に
+鏡の中　目をそらした
+「大丈夫」って言えない自分も
+守りたかったんだね
+
+[Pre-Chorus]
+小さな決意が
+胸の奥で鳴りはじめる
+負けない、って
+
+[Chorus]
+飛べ　飛べ　風をつかんで
+未来は今　ここから始まる
+涙ごと　抱きしめて
+私は私を信じたい
+歌え　歌え　空の向こうへ
+希望はちゃんと届くから
+怖くても一歩ずつ
+光の方へ　進め
+
+[Verse 2]
+誰かの正解より
+私の願いを選びたい
+遠回りでもいいよ
+その全部が私になる
+
+[Pre-Chorus 2]
+折れた羽根の跡も
+明日を照らす証
+見上げて
+
+[Chorus]
+飛べ　飛べ　風をつかんで
+未来は今　ここから始まる
+迷いごと　連れていけ
+私は私を超えていく
+歌え　歌え　声の限り
+希望はちゃんと届くから
+立ち止まる日があっても
+また歩けばいい
+
+[Bridge]
+暗い夜に　息が詰まって
+「もう無理」って言いかけた
+でもね　心の奥で
+消えない火が揺れていた
+だから私は　手を伸ばす
+夜明けに
+
+[Final Chorus]
+飛べ　飛べ　風をつかんで
+未来は今　ここで塗り替える
+傷だって　誇れるよ
+私は私で強くなる
+歌え　歌え　空の向こうへ
+希望はちゃんと届くから
+どんな夜が来たとしても
+朝は必ず　迎えに来る
+
+[Outro]
+進め　進め
+私たちは　終わらない`,
+
+  };
+
+  // ── 曲データ（実ファイル構成に合わせて定義） ──
+  // ファイルパス: music/${genre.dir}/${track}.mp3
+  const genres = [
+    {
+      dir:   "1.POP",
+      label: "POP",
+      tracks: [
+        "キラキラ everyday",
+        "未来色グラフィティ",
+        "笑顔スイッチ",
+      ]
+    },
+    {
+      dir:   "2.Cyber＆Techno",
+      label: "Cyber & Techno",
+      tracks: [
+        "Pixel Booster!",
+        "デジタル・ダイバー",
+        "ピコピコドリーム",
+      ]
+    },
+    {
+      dir:   "3.RAP",
+      label: "RAP",
+      tracks: [
+        "Midnight Brass Riot",
+        "Neon Diva\u2019s Flow",
+        "Neon Queen",
+      ]
+    },
+    {
+      dir:   "4.ROCK",
+      label: "ROCK",
+      tracks: [
+        "Unbroken",
+        "WINGS",
+        "アカリトビラ",
+        "キャンバス",
+        "プリズム・ステップ",
+        "風をつかんで",
+      ]
+    },
+  ];
+
+  const elList    = document.getElementById("trackList");
+  const elNP      = document.getElementById("nowPlaying");
+  const elNPName  = document.getElementById("npName");
+  const elTotal   = document.getElementById("totalCount");
+  const elVisible = document.getElementById("visibleCount");
+  const elSearch  = document.getElementById("searchInput");
+
+  let currentAudio = null;
+  let groups = []; // 検索フィルタ用 { el, titleLower, genreDir }
+
+  // 総曲数を集計
+  const totalTracks = genres.reduce((sum, g) => sum + g.tracks.length, 0);
+  elTotal.textContent = totalTracks;
+
+  let globalIdx = 0;
+
+  // ── ジャンルセクションごとに生成 ──
+  genres.forEach(genre => {
+    const section = document.createElement("div");
+    section.className = "genre-section";
+    genre.sectionEl = section;
+
+    // ジャンルヘッダー
+    const genreHead = document.createElement("div");
+    genreHead.className = "genre-header";
+    genreHead.innerHTML =
+      `<span class="gh-tag">//</span>` +
+      `<span>${genre.label}</span>` +
+      `<span class="gh-line"></span>` +
+      `<span class="gh-count">${genre.tracks.length} TRACKS</span>`;
+    section.appendChild(genreHead);
+
+    const trackListEl = document.createElement("div");
+    trackListEl.className = "track-list";
+    section.appendChild(trackListEl);
+
+    // ── 各トラックを生成 ──
+    genre.tracks.forEach(title => {
+      globalIdx++;
+      const group = document.createElement("div");
+      group.className = "track-group";
+
+      // サムネイル
+      const thumb = document.createElement("div");
+      thumb.className = "track-thumb";
+
+      // ヘッダー行
+      const header = document.createElement("div");
+      header.className = "track-header";
+
+      const numEl = document.createElement("span");
+      numEl.className = "track-num";
+      numEl.textContent = String(globalIdx).padStart(2, "0");
+
+      const nameEl = document.createElement("span");
+      nameEl.className = "track-name";
+      nameEl.textContent = title;
+
+      const arrowEl = document.createElement("span");
+      arrowEl.className = "expand-arrow";
+      arrowEl.innerHTML = "&#9660;";
+
+      header.append(thumb, numEl, nameEl, arrowEl);
+
+      // ── プレイヤーパネル（展開時に表示） ──
+      const panel = document.createElement("div");
+      panel.className = "player-panel";
+
+      // 展開パネル内アートワーク
+      const panelArt = document.createElement("div");
+      panelArt.className = "panel-artwork";
+
+      // audioプレイヤー
+      const audioWrap = document.createElement("div");
+      audioWrap.className = "audio-wrap";
+
+      const src = `music/${genre.dir}/${title}.mp3`;
+      const audio = document.createElement("audio");
+      audio.src = src;
+      audio.controls = true;
+      audio.preload = "none";
+
+      // 再生開始時の処理
+      audio.addEventListener("play", () => {
+        if (currentAudio && currentAudio !== audio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+        currentAudio = audio;
+
+        document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+        group.classList.add("is-active");
+
+        elNPName.textContent = title;
+        elNP.classList.add("visible");
+      });
+
+      audio.addEventListener("ended", () => {
+        elNP.classList.remove("visible");
+        group.classList.remove("is-active");
+      });
+
+      audioWrap.appendChild(audio);
+
+      // 歌詞ブロック（初回展開時にフェッチして挿入）
+      const lyricsEl = document.createElement("div");
+      lyricsEl.className = "lyrics-block";
+      audioWrap.appendChild(lyricsEl);
+
+      panel.append(panelArt, audioWrap);
+
+      // アコーディオン開閉（初回展開時に歌詞をフェッチ）
+      let lyricsFetched = false;
+      header.addEventListener("click", () => {
+        const wasOpen = group.classList.contains("is-open");
+        document.querySelectorAll(".track-group.is-open").forEach(g => g.classList.remove("is-open"));
+        if (!wasOpen) {
+          group.classList.add("is-open");
+          if (!lyricsFetched) {
+            lyricsFetched = true;
+            const text = lyricsData[title];
+            if (text) {
+              lyricsEl.innerHTML = renderLyrics(text);
+              lyricsEl.classList.add("has-lyrics");
+            }
+          }
+        }
+      });
+
+      group.append(header, panel);
+      trackListEl.appendChild(group);
+      groups.push({ el: group, titleLower: title.toLowerCase(), genreDir: genre.dir });
+
+      // アートワーク（artwork/タイトル.jpg）
+      const artSrc = `artwork/${title}.jpg`;
+
+      const thumbImg = document.createElement("img");
+      thumbImg.alt = title;
+      thumbImg.onload  = () => thumb.classList.add("loaded");
+      thumbImg.onerror = () => {};
+      thumbImg.src = artSrc;
+      thumb.appendChild(thumbImg);
+
+      const panelImg = document.createElement("img");
+      panelImg.alt = title;
+      panelImg.onload  = () => { panelArt.classList.add("loaded", "has-art"); };
+      panelImg.onerror = () => {};
+      panelImg.src = artSrc;
+      panelArt.appendChild(panelImg);
+    });
+
+    elList.appendChild(section);
+  });
+
+  updateVisible();
+
+  // ── 検索フィルタ ──
+  elSearch.addEventListener("input", () => {
+    const q = elSearch.value.trim().toLowerCase();
+    groups.forEach(({ el, titleLower }) => {
+      el.style.display = titleLower.includes(q) ? "" : "none";
+    });
+    // 全曲が非表示のジャンルセクションを隠す
+    genres.forEach(genre => {
+      const anyVisible = groups
+        .filter(g => g.genreDir === genre.dir)
+        .some(g => g.el.style.display !== "none");
+      genre.sectionEl.style.display = anyVisible ? "" : "none";
+    });
+    updateVisible();
+  });
+
+  function updateVisible() {
+    const count = groups.filter(({ el }) => el.style.display !== "none").length;
+    elVisible.textContent = count;
+  }
+
+  // ── 歌詞テキストをHTMLに変換 ──
+  function renderLyrics(text) {
+    let html = '';
+    // Windows 改行 (\r\n) と Mac 改行 (\r) を統一
+    text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        // 空行
+        html += '<div class="lyrics-blank"></div>';
+      } else if (/^\[.+\]$/.test(trimmed)) {
+        // [Chorus] などのセクションラベル
+        html += `<div class="lyrics-section">${trimmed.slice(1, -1)}</div>`;
+      } else {
+        // 歌詞の行
+        html += `<div class="lyrics-line">${trimmed}</div>`;
+      }
+    });
+    return html;
+  }
+</script>
+</body>
+</html>
