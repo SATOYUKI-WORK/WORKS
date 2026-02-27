@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAFÉ LOUNGE</title>
+
+  <!-- OGP：LINE・SNSでシェアしたときのサムネイル設定 -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Café Lounge" />
+  <meta property="og:description" content="カフェで流れるインストゥルメンタル曲一覧" />
+  <meta property="og:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CafeLounge/samune.jpg" />
+  <meta property="og:url"         content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CafeLounge/" />
+  <meta property="og:site_name"   content="Café Lounge" />
+
+  <!-- Twitter Card（X・Discordなどでも有効） -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Café Lounge" />
+  <meta name="twitter:description" content="カフェで流れるインストゥルメンタル曲一覧" />
+  <meta name="twitter:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CafeLounge/samune.jpg" />
+
+  <style>
+    /* ── リセット & CSS変数 ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #18110a;
+      --bg2:          #221809;
+      --bg3:          #2c1e0c;
+      --amber:        #c8924a;
+      --amber-dim:    rgba(200,146,74,0.45);
+      --amber-faint:  rgba(200,146,74,0.08);
+      --cream:        #b89060;
+      --text:         #c8a870;
+      --text-hi:      #e8d4a8;
+      --text-dim:     #6b4e28;
+      --border:       #3a2810;
+      --border-hi:    #5a3c18;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      min-height: 100vh;
+      /* 細かいグレイン感 */
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(200,146,74,0.008) 3px,
+        rgba(200,146,74,0.008) 4px
+      );
+    }
+
+    /* 背景グロー */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 40% at 50% -5%,  rgba(200,146,74,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 85% 85%,  rgba(160,100,40,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 30% at 10% 80%,  rgba(180,130,60,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── ヘッダー ── */
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 4rem 1rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-prefix {
+      font-size: 0.65rem;
+      letter-spacing: 0.55em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 0.6rem;
+    }
+
+    .site-title {
+      font-size: clamp(2rem, 7vw, 4rem);
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--amber);
+      text-shadow:
+        0 0 8px rgba(200,146,74,0.4),
+        0 0 30px rgba(200,146,74,0.15);
+      font-style: italic;
+    }
+
+    .site-sub {
+      margin-top: 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── メインコンテナ ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem 6rem;
+    }
+
+    /* ステータスバー */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+    }
+
+    .status-bar .val { color: var(--amber); }
+    .sep { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── 検索ボックス ── */
+    .search-wrap {
+      margin-bottom: 1.8rem;
+      position: relative;
+    }
+
+    .search-wrap::before {
+      content: '♬';
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--amber);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text-hi);
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      padding: 0.7rem 1rem 0.7rem 2.2rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #searchInput::placeholder { color: var(--text-dim); }
+    #searchInput:focus { border-color: var(--amber-dim); }
+
+    /* ── トラックリスト ── */
+    .track-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .track-group {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .track-group:hover { border-color: var(--border-hi); }
+
+    .track-group.is-active,
+    .track-group.is-open {
+      border-left-color: var(--amber);
+      background: var(--bg3);
+      border-color: var(--border-hi);
+    }
+
+    /* トラックヘッダー */
+    .track-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.2rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .track-num {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      min-width: 2ch;
+      text-align: right;
+      flex-shrink: 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* サムネイル */
+    .track-thumb {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .track-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 画像未ロード時のプレースホルダーアイコン */
+    .track-thumb::after {
+      content: '♪';
+      position: absolute;
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .track-thumb.loaded::after { display: none; }
+
+    /* トラック名エリア */
+    .track-info {
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+
+    .track-name {
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      color: var(--text-hi);
+      transition: color 0.15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-group.is-active .track-name,
+    .track-group.is-open .track-name {
+      color: var(--amber);
+    }
+
+    .track-ver {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      font-family: 'Courier New', monospace;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.1em 0.4em;
+    }
+
+    .expand-arrow {
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .track-group.is-open .expand-arrow { transform: rotate(180deg); }
+
+    /* ── プレイヤーパネル（展開時） ── */
+    .player-panel {
+      display: none;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 0 1.2rem 1.1rem 3.8rem;
+    }
+
+    .track-group.is-open .player-panel { display: flex; }
+
+    /* 展開パネル内アートワーク */
+    .panel-artwork {
+      display: none;
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panel-artwork img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .panel-artwork::after {
+      content: '♪';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--text-dim);
+    }
+
+    .panel-artwork.loaded::after { display: none; }
+    .panel-artwork.has-art { display: block; }
+
+    /* HTML5 audioプレイヤー */
+    .audio-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    audio {
+      width: 100%;
+      height: 30px;
+      outline: none;
+      color-scheme: dark;
+      filter: hue-rotate(20deg) saturate(1.2) brightness(0.9);
+    }
+
+    /* ── ムードセクション ── */
+    .mood-section { margin-top: 2.5rem; }
+    .mood-section:first-child { margin-top: 0; }
+
+    .mood-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.45em;
+      color: var(--amber);
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+    }
+
+    .mood-header .mh-icon  { font-size: 0.85rem; color: var(--amber); opacity: 0.7; }
+    .mood-header .mh-line  { flex: 1; height: 1px; background: var(--border); }
+    .mood-header .mh-count { color: var(--text-dim); flex-shrink: 0; }
+    .mood-header .mh-desc  {
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      font-style: normal;
+    }
+
+    /* ── NOW PLAYINGバー（画面下部固定） ── */
+    .now-playing {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(24,17,10,0.96);
+      border-top: 1px solid var(--amber-dim);
+      padding: 0.65rem 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -4px 40px rgba(200,146,74,0.06);
+    }
+
+    .now-playing.visible { display: flex; }
+
+    .np-pulse {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 8px var(--amber), 0 0 20px var(--amber-dim);
+      flex-shrink: 0;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.2; }
+    }
+
+    .np-tag {
+      font-size: 0.58rem;
+      letter-spacing: 0.4em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      flex-shrink: 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .np-name {
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      color: var(--amber);
+      text-shadow: 0 0 12px var(--amber-dim);
+      font-style: italic;
+    }
+
+    /* ── フッター ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.4em;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── スクロールバー ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hi); }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="logo-prefix">— ambient instrumental —</p>
+  <h1 class="site-title">Café Lounge</h1>
+  <p class="site-sub">lofi sessions · relax & breathe</p>
+</header>
+
+<main>
+  <div class="status-bar">
+    <span>TRACKS: <span class="val" id="totalCount">0</span></span>
+    <span>VISIBLE: <span class="val" id="visibleCount">0</span></span>
+    <div class="sep"></div>
+    <span>INSTRUMENTAL · NO VOCALS</span>
+  </div>
+
+  <div class="search-wrap">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search tracks..."
+      autocomplete="off"
+      spellcheck="false"
+    />
+  </div>
+
+  <div class="track-list" id="trackList"></div>
+</main>
+
+<footer>Café Lounge &nbsp;·&nbsp; Instrumental Music &nbsp;·&nbsp; All Rights Reserved</footer>
+
+<!-- NOW PLAYINGバー -->
+<div class="now-playing" id="nowPlaying">
+  <span class="np-pulse"></span>
+  <span class="np-tag">Now Playing</span>
+  <span class="np-name" id="npName">—</span>
+</div>
+
+<script>
+  // ── ムード別トラック定義 ──
+  // ファイルパス: music/${filename}.mp3
+  // displayName: 表示用タイトル、 ver: バージョン番号
+  const moods = [
+    {
+      label: "MIDNIGHT HOURS",
+      icon:  "☕",
+      desc:  "深夜の静寂とコーヒーの香り",
+      tracks: [
+        { filename: "Midnight Mug Reflections1", displayName: "Midnight Mug Reflections", ver: "1" },
+        { filename: "Midnight Mug Reflections2", displayName: "Midnight Mug Reflections", ver: "2" },
+        { filename: "Midnight Porcelain1",       displayName: "Midnight Porcelain",       ver: "1" },
+        { filename: "Midnight Porcelain2",       displayName: "Midnight Porcelain",       ver: "2" },
+        { filename: "Midnight Porcelain3",       displayName: "Midnight Porcelain",       ver: "3" },
+        { filename: "Midnight Porcelain4",       displayName: "Midnight Porcelain",       ver: "4" },
+        { filename: "Midnight Steam1",           displayName: "Midnight Steam",           ver: "1" },
+        { filename: "Midnight Steam2",           displayName: "Midnight Steam",           ver: "2" },
+      ]
+    },
+    {
+      label: "SUNLIT MOMENTS",
+      icon:  "☀",
+      desc:  "陽光が差し込む午後のひととき",
+      tracks: [
+        { filename: "Sunlit Steam1",         displayName: "Sunlit Steam",         ver: "1" },
+        { filename: "Sunlit Steam2",         displayName: "Sunlit Steam",         ver: "2" },
+        { filename: "Sunlit Table for One1", displayName: "Sunlit Table for One", ver: "1" },
+        { filename: "Sunlit Table for One2", displayName: "Sunlit Table for One", ver: "2" },
+        { filename: "Sunny Window Brew1",    displayName: "Sunny Window Brew",    ver: "1" },
+        { filename: "Sunny Window Brew2",    displayName: "Sunny Window Brew",    ver: "2" },
+      ]
+    },
+    {
+      label: "RAINY AFTERNOONS",
+      icon:  "🌧",
+      desc:  "窓を叩く雨音とくぐもった光",
+      tracks: [
+        { filename: "Dust on the Daydream1",   displayName: "Dust on the Daydream",   ver: "1" },
+        { filename: "Dust on the Daydream2",   displayName: "Dust on the Daydream",   ver: "2" },
+        { filename: "Faded Polaroids1",        displayName: "Faded Polaroids",        ver: "1" },
+        { filename: "Faded Polaroids2",        displayName: "Faded Polaroids",        ver: "2" },
+        { filename: "Rain on the Window Tape1",displayName: "Rain on the Window Tape",ver: "1" },
+        { filename: "Rain on the Window Tape2",displayName: "Rain on the Window Tape",ver: "2" },
+        { filename: "Steam on the Window1",    displayName: "Steam on the Window",    ver: "1" },
+        { filename: "Steam on the Window2",    displayName: "Steam on the Window",    ver: "2" },
+      ]
+    },
+  ];
+
+  const elList    = document.getElementById("trackList");
+  const elNP      = document.getElementById("nowPlaying");
+  const elNPName  = document.getElementById("npName");
+  const elTotal   = document.getElementById("totalCount");
+  const elVisible = document.getElementById("visibleCount");
+  const elSearch  = document.getElementById("searchInput");
+
+  let currentAudio = null;
+  // 検索フィルタ用: { el, searchText, moodLabel }
+  let trackMeta = [];
+
+  // 総曲数を集計
+  const totalTracks = moods.reduce((sum, m) => sum + m.tracks.length, 0);
+  elTotal.textContent = totalTracks;
+
+  let globalIdx = 0;
+
+  // ── ムードセクションごとに生成 ──
+  moods.forEach(mood => {
+    const section = document.createElement("div");
+    section.className = "mood-section";
+    mood.sectionEl = section;
+
+    // ムードヘッダー
+    const moodHead = document.createElement("div");
+    moodHead.className = "mood-header";
+    moodHead.innerHTML =
+      `<span class="mh-icon">${mood.icon}</span>` +
+      `<span>${mood.label}</span>` +
+      `<span class="mh-desc">&nbsp;—&nbsp;${mood.desc}</span>` +
+      `<span class="mh-line"></span>` +
+      `<span class="mh-count">${mood.tracks.length} tracks</span>`;
+    section.appendChild(moodHead);
+
+    const trackListEl = document.createElement("div");
+    trackListEl.className = "track-list";
+    section.appendChild(trackListEl);
+
+    // ── 各トラックを生成 ──
+    mood.tracks.forEach(track => {
+      globalIdx++;
+      const group = document.createElement("div");
+      group.className = "track-group";
+
+      // ヘッダー行
+      const header = document.createElement("div");
+      header.className = "track-header";
+
+      const numEl = document.createElement("span");
+      numEl.className = "track-num";
+      numEl.textContent = String(globalIdx).padStart(2, "0");
+
+      // サムネイル
+      const thumb = document.createElement("div");
+      thumb.className = "track-thumb";
+
+      const infoEl = document.createElement("div");
+      infoEl.className = "track-info";
+
+      const nameEl = document.createElement("span");
+      nameEl.className = "track-name";
+      nameEl.textContent = track.displayName;
+
+      const verEl = document.createElement("span");
+      verEl.className = "track-ver";
+      verEl.textContent = `ver.${track.ver}`;
+
+      infoEl.append(nameEl, verEl);
+
+      const arrowEl = document.createElement("span");
+      arrowEl.className = "expand-arrow";
+      arrowEl.innerHTML = "&#9660;";
+
+      header.append(numEl, thumb, infoEl, arrowEl);
+
+      // ── プレイヤーパネル（展開時に表示） ──
+      const panel = document.createElement("div");
+      panel.className = "player-panel";
+
+      // 展開パネル内アートワーク
+      const panelArt = document.createElement("div");
+      panelArt.className = "panel-artwork";
+
+      const audioWrap = document.createElement("div");
+      audioWrap.className = "audio-wrap";
+
+      const src = `music/${track.filename}.mp3`;
+      const audio = document.createElement("audio");
+      audio.src = src;
+      audio.controls = true;
+      audio.preload = "none";
+
+      // 再生開始時の処理
+      audio.addEventListener("play", () => {
+        if (currentAudio && currentAudio !== audio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+        currentAudio = audio;
+
+        document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+        group.classList.add("is-active");
+
+        elNPName.textContent = `${track.displayName}  ·  ver.${track.ver}`;
+        elNP.classList.add("visible");
+      });
+
+      audio.addEventListener("ended", () => {
+        elNP.classList.remove("visible");
+        group.classList.remove("is-active");
+      });
+
+      audioWrap.appendChild(audio);
+      panel.append(panelArt, audioWrap);
+
+      // アートワーク（曲名ごとに1枚 = displayName.jpg）
+      const artSrc = `artwork/${track.displayName}.jpg`;
+
+      const thumbImg = document.createElement("img");
+      thumbImg.alt = track.displayName;
+      thumbImg.onload  = () => thumb.classList.add("loaded");
+      thumbImg.onerror = () => {};
+      thumbImg.src = artSrc;
+      thumb.appendChild(thumbImg);
+
+      const panelImg = document.createElement("img");
+      panelImg.alt = track.displayName;
+      panelImg.onload  = () => { panelArt.classList.add("loaded", "has-art"); };
+      panelImg.onerror = () => {};
+      panelImg.src = artSrc;
+      panelArt.appendChild(panelImg);
+
+      // アコーディオン開閉
+      header.addEventListener("click", () => {
+        const wasOpen = group.classList.contains("is-open");
+        document.querySelectorAll(".track-group.is-open").forEach(g => g.classList.remove("is-open"));
+        if (!wasOpen) {
+          group.classList.add("is-open");
+        }
+      });
+
+      group.append(header, panel);
+      trackListEl.appendChild(group);
+      trackMeta.push({
+        el: group,
+        searchText: (track.displayName + " " + track.ver).toLowerCase(),
+        moodLabel: mood.label,
+      });
+    });
+
+    elList.appendChild(section);
+  });
+
+  updateVisible();
+
+  // ── 検索フィルタ ──
+  elSearch.addEventListener("input", () => {
+    const q = elSearch.value.trim().toLowerCase();
+    trackMeta.forEach(({ el, searchText }) => {
+      el.style.display = searchText.includes(q) ? "" : "none";
+    });
+    // 全曲が非表示のムードセクションを隠す
+    moods.forEach(mood => {
+      const anyVisible = trackMeta
+        .filter(m => m.moodLabel === mood.label)
+        .some(m => m.el.style.display !== "none");
+      mood.sectionEl.style.display = anyVisible ? "" : "none";
+    });
+    updateVisible();
+  });
+
+  function updateVisible() {
+    const count = trackMeta.filter(({ el }) => el.style.display !== "none").length;
+    elVisible.textContent = count;
+  }
+</script>
+</body>
+</html>
