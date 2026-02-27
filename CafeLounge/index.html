@@ -259,15 +259,43 @@
       color: var(--amber);
     }
 
-    .track-ver {
-      font-size: 0.6rem;
+    /* ヘッダー内：バージョン数バッジ */
+    .ver-count {
+      font-size: 0.58rem;
       letter-spacing: 0.2em;
       color: var(--text-dim);
       flex-shrink: 0;
       font-family: 'Courier New', monospace;
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.1em 0.4em;
+      padding: 0.1em 0.45em;
+    }
+
+    /* 展開パネル内：バージョン行 */
+    .ver-row {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .ver-row + .ver-row {
+      margin-top: 0.55rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .ver-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+      flex-shrink: 0;
+      min-width: 3.5em;
+      text-align: right;
+    }
+
+    .ver-row audio {
+      flex: 1;
     }
 
     .expand-arrow {
@@ -339,6 +367,33 @@
       filter: hue-rotate(20deg) saturate(1.2) brightness(0.9);
     }
 
+    /* ── ヒントバー ── */
+    .hint-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.8rem;
+      padding: 0.55rem 0.9rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber-dim);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.03em;
+    }
+
+    .hint-bar strong {
+      color: var(--amber);
+      font-weight: normal;
+    }
+
+    .hint-icon {
+      color: var(--amber);
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
     /* ── ムードセクション ── */
     .mood-section { margin-top: 2.5rem; }
     .mood-section:first-child { margin-top: 0; }
@@ -363,6 +418,36 @@
       letter-spacing: 0.2em;
       color: var(--text-dim);
       font-style: normal;
+    }
+
+    /* PLAY ALL ボタン */
+    .mh-play-btn {
+      flex-shrink: 0;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      padding: 0.2em 0.65em;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .mh-play-btn:hover {
+      border-color: var(--amber-dim);
+      color: var(--amber);
+    }
+
+    /* 連続再生中のセクション */
+    .mood-section.is-playing .mh-play-btn {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .mood-section.is-playing .mh-line {
+      background: linear-gradient(to right, var(--amber-dim), var(--border));
     }
 
     /* ── NOW PLAYINGバー（画面下部固定） ── */
@@ -459,6 +544,11 @@
     />
   </div>
 
+  <div class="hint-bar">
+    <span class="hint-icon">▷</span>
+    各セクションの <strong>Play All</strong> ボタンでセクション内を連続再生。末尾まで再生すると先頭にループします。
+  </div>
+
   <div class="track-list" id="trackList"></div>
 </main>
 
@@ -472,51 +562,55 @@
 </div>
 
 <script>
-  // ── ムード別トラック定義 ──
-  // ファイルパス: music/${filename}.mp3
-  // displayName: 表示用タイトル、 ver: バージョン番号
+  // ── ムード別曲定義 ──
+  // songs: 曲タイトル単位でグループ化。versions 内に各バージョンのファイル名を列挙
   const moods = [
     {
       label: "MIDNIGHT HOURS",
       icon:  "☕",
       desc:  "深夜の静寂とコーヒーの香り",
-      tracks: [
-        { filename: "Midnight Mug Reflections1", displayName: "Midnight Mug Reflections", ver: "1" },
-        { filename: "Midnight Mug Reflections2", displayName: "Midnight Mug Reflections", ver: "2" },
-        { filename: "Midnight Porcelain1",       displayName: "Midnight Porcelain",       ver: "1" },
-        { filename: "Midnight Porcelain2",       displayName: "Midnight Porcelain",       ver: "2" },
-        { filename: "Midnight Porcelain3",       displayName: "Midnight Porcelain",       ver: "3" },
-        { filename: "Midnight Porcelain4",       displayName: "Midnight Porcelain",       ver: "4" },
-        { filename: "Midnight Steam1",           displayName: "Midnight Steam",           ver: "1" },
-        { filename: "Midnight Steam2",           displayName: "Midnight Steam",           ver: "2" },
+      songs: [
+        { displayName: "Midnight Mug Reflections", versions: ["Midnight Mug Reflections1", "Midnight Mug Reflections2"] },
+        { displayName: "Midnight Porcelain",        versions: ["Midnight Porcelain1", "Midnight Porcelain2", "Midnight Porcelain3", "Midnight Porcelain4"] },
+        { displayName: "Midnight Steam",            versions: ["Midnight Steam1", "Midnight Steam2"] },
+        { displayName: "Velvet Steam",              versions: ["Velvet Steam1", "Velvet Steam2"] },
       ]
     },
     {
       label: "SUNLIT MOMENTS",
       icon:  "☀",
       desc:  "陽光が差し込む午後のひととき",
-      tracks: [
-        { filename: "Sunlit Steam1",         displayName: "Sunlit Steam",         ver: "1" },
-        { filename: "Sunlit Steam2",         displayName: "Sunlit Steam",         ver: "2" },
-        { filename: "Sunlit Table for One1", displayName: "Sunlit Table for One", ver: "1" },
-        { filename: "Sunlit Table for One2", displayName: "Sunlit Table for One", ver: "2" },
-        { filename: "Sunny Window Brew1",    displayName: "Sunny Window Brew",    ver: "1" },
-        { filename: "Sunny Window Brew2",    displayName: "Sunny Window Brew",    ver: "2" },
+      songs: [
+        { displayName: "Coconut Airwaves",      versions: ["Coconut Airwaves1", "Coconut Airwaves2"] },
+        { displayName: "Pastel Morning Stroll", versions: ["Pastel Morning Stroll1", "Pastel Morning Stroll2"] },
+        { displayName: "Sunlight On The Table", versions: ["Sunlight On The Table1", "Sunlight On The Table2"] },
+        { displayName: "Sunlit Steam",          versions: ["Sunlit Steam1", "Sunlit Steam2"] },
+        { displayName: "Sunlit Table for One",  versions: ["Sunlit Table for One1", "Sunlit Table for One2"] },
+        { displayName: "Sunny Window Brew",     versions: ["Sunny Window Brew1", "Sunny Window Brew2"] },
+        { displayName: "Warm Mug Morning",      versions: ["Warm Mug Morning1", "Warm Mug Morning2"] },
       ]
     },
     {
       label: "RAINY AFTERNOONS",
       icon:  "🌧",
       desc:  "窓を叩く雨音とくぐもった光",
-      tracks: [
-        { filename: "Dust on the Daydream1",   displayName: "Dust on the Daydream",   ver: "1" },
-        { filename: "Dust on the Daydream2",   displayName: "Dust on the Daydream",   ver: "2" },
-        { filename: "Faded Polaroids1",        displayName: "Faded Polaroids",        ver: "1" },
-        { filename: "Faded Polaroids2",        displayName: "Faded Polaroids",        ver: "2" },
-        { filename: "Rain on the Window Tape1",displayName: "Rain on the Window Tape",ver: "1" },
-        { filename: "Rain on the Window Tape2",displayName: "Rain on the Window Tape",ver: "2" },
-        { filename: "Steam on the Window1",    displayName: "Steam on the Window",    ver: "1" },
-        { filename: "Steam on the Window2",    displayName: "Steam on the Window",    ver: "2" },
+      songs: [
+        { displayName: "Dust on the Daydream",    versions: ["Dust on the Daydream1", "Dust on the Daydream2"] },
+        { displayName: "Faded Polaroids",         versions: ["Faded Polaroids1", "Faded Polaroids2"] },
+        { displayName: "Rain on the Window Tape", versions: ["Rain on the Window Tape1", "Rain on the Window Tape2"] },
+        { displayName: "Soft October Pages",      versions: ["Soft October Pages1", "Soft October Pages2"] },
+        { displayName: "Steam on the Window",     versions: ["Steam on the Window1", "Steam on the Window2"] },
+      ]
+    },
+    {
+      label: "COZY CORNERS",
+      icon:  "🍵",
+      desc:  "温かいカップとゆったりした時間",
+      songs: [
+        { displayName: "Quiet Cups at 118",      versions: ["Quiet Cups at 118_1", "Quiet Cups at 118_2"] },
+        { displayName: "Quiet Cups, Slow Time",  versions: ["Quiet Cups, Slow Time1", "Quiet Cups, Slow Time2"] },
+        { displayName: "Snow Mugs & Woolen Hugs",versions: ["Snow Mugs & Woolen Hugs1", "Snow Mugs & Woolen Hugs2"] },
+        { displayName: "Steam & Honey",          versions: ["Steam & Honey1", "Steam & Honey2"] },
       ]
     },
   ];
@@ -529,12 +623,37 @@
   const elSearch  = document.getElementById("searchInput");
 
   let currentAudio = null;
-  // 検索フィルタ用: { el, searchText, moodLabel }
-  let trackMeta = [];
+  // 検索フィルタ用: { el, nameLower, moodLabel }
+  let songMeta = [];
 
-  // 総曲数を集計
-  const totalTracks = moods.reduce((sum, m) => sum + m.tracks.length, 0);
-  elTotal.textContent = totalTracks;
+  // ── 連続再生の状態管理 ──
+  // playlist: [{ audio, songName, verNum, group }, ...]
+  // idx: 現在再生中のインデックス（-1 = 停止中）
+  const ap = { sectionEl: null, playlist: [], idx: -1, btnEl: null };
+
+  function apStop() {
+    if (ap.sectionEl) ap.sectionEl.classList.remove("is-playing");
+    if (ap.btnEl) ap.btnEl.textContent = "▷ Play All";
+    ap.sectionEl = null; ap.playlist = []; ap.idx = -1; ap.btnEl = null;
+  }
+
+  function apPlayAt(idx) {
+    if (idx < 0 || idx >= ap.playlist.length) { apStop(); return; }
+    ap.idx = idx;
+    const { audio, group } = ap.playlist[idx];
+
+    // 他の開いているアコーディオンを閉じて対象を開く
+    document.querySelectorAll(".track-group.is-open").forEach(g => g.classList.remove("is-open"));
+    group.classList.add("is-open");
+    group.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    audio.currentTime = 0;
+    audio.play();
+  }
+
+  // 総曲数（ユニーク曲タイトル数）を集計
+  const totalSongs = moods.reduce((sum, m) => sum + m.songs.length, 0);
+  elTotal.textContent = totalSongs;
 
   let globalIdx = 0;
 
@@ -552,20 +671,58 @@
       `<span>${mood.label}</span>` +
       `<span class="mh-desc">&nbsp;—&nbsp;${mood.desc}</span>` +
       `<span class="mh-line"></span>` +
-      `<span class="mh-count">${mood.tracks.length} tracks</span>`;
+      `<span class="mh-count">${mood.songs.length} songs</span>`;
+
+    // PLAY ALL ボタン
+    const playBtn = document.createElement("button");
+    playBtn.className = "mh-play-btn";
+    playBtn.textContent = "▷ Play All";
+    mood.playBtn = playBtn;
+    mood.section = section;
+
+    playBtn.addEventListener("click", () => {
+      const alreadyPlaying = ap.sectionEl === section;
+      // 現在の連続再生を停止
+      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      apStop();
+      if (alreadyPlaying) return; // トグル：同じセクションなら停止だけ
+
+      // このセクションのプレイリストを構築（全song × 全version）
+      ap.sectionEl = section;
+      ap.btnEl = playBtn;
+      ap.playlist = [];
+      mood.songs.forEach(song => {
+        song.versions.forEach((filename, vi) => {
+          ap.playlist.push({
+            audio:    song.audios[vi],
+            group:    song.groupEl,
+            songName: song.displayName,
+            verNum:   vi + 1,
+          });
+        });
+      });
+
+      section.classList.add("is-playing");
+      playBtn.textContent = "■ Stop";
+      apPlayAt(0);
+    });
+
+    moodHead.appendChild(playBtn);
     section.appendChild(moodHead);
 
     const trackListEl = document.createElement("div");
     trackListEl.className = "track-list";
     section.appendChild(trackListEl);
 
-    // ── 各トラックを生成 ──
-    mood.tracks.forEach(track => {
+    // ── 曲タイトルごとにグループを生成 ──
+    mood.songs.forEach(song => {
+      song.audios = []; // 後でプレイリスト構築に使う
       globalIdx++;
       const group = document.createElement("div");
       group.className = "track-group";
+      song.groupEl = group; // セクション再生時にアコーディオンを開くために保持
 
-      // ヘッダー行
+      // ── ヘッダー行 ──
       const header = document.createElement("div");
       header.className = "track-header";
 
@@ -576,19 +733,25 @@
       // サムネイル
       const thumb = document.createElement("div");
       thumb.className = "track-thumb";
+      const thumbImg = document.createElement("img");
+      thumbImg.alt = song.displayName;
+      thumbImg.onload  = () => thumb.classList.add("loaded");
+      thumbImg.onerror = () => {};
+      thumbImg.src = `artwork/${song.displayName}.jpg`;
+      thumb.appendChild(thumbImg);
 
       const infoEl = document.createElement("div");
       infoEl.className = "track-info";
 
       const nameEl = document.createElement("span");
       nameEl.className = "track-name";
-      nameEl.textContent = track.displayName;
+      nameEl.textContent = song.displayName;
 
-      const verEl = document.createElement("span");
-      verEl.className = "track-ver";
-      verEl.textContent = `ver.${track.ver}`;
+      const verCountEl = document.createElement("span");
+      verCountEl.className = "ver-count";
+      verCountEl.textContent = `${song.versions.length} ver.`;
 
-      infoEl.append(nameEl, verEl);
+      infoEl.append(nameEl, verCountEl);
 
       const arrowEl = document.createElement("span");
       arrowEl.className = "expand-arrow";
@@ -596,62 +759,72 @@
 
       header.append(numEl, thumb, infoEl, arrowEl);
 
-      // ── プレイヤーパネル（展開時に表示） ──
+      // ── プレイヤーパネル（展開時） ──
       const panel = document.createElement("div");
       panel.className = "player-panel";
 
       // 展開パネル内アートワーク
       const panelArt = document.createElement("div");
       panelArt.className = "panel-artwork";
+      const panelImg = document.createElement("img");
+      panelImg.alt = song.displayName;
+      panelImg.onload  = () => { panelArt.classList.add("loaded", "has-art"); };
+      panelImg.onerror = () => {};
+      panelImg.src = `artwork/${song.displayName}.jpg`;
+      panelArt.appendChild(panelImg);
 
+      // バージョンリスト
       const audioWrap = document.createElement("div");
       audioWrap.className = "audio-wrap";
 
-      const src = `music/${track.filename}.mp3`;
-      const audio = document.createElement("audio");
-      audio.src = src;
-      audio.controls = true;
-      audio.preload = "none";
+      song.versions.forEach((filename, idx) => {
+        const verNum = idx + 1;
 
-      // 再生開始時の処理
-      audio.addEventListener("play", () => {
-        if (currentAudio && currentAudio !== audio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-        }
-        currentAudio = audio;
+        const row = document.createElement("div");
+        row.className = "ver-row";
 
-        document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
-        group.classList.add("is-active");
+        const label = document.createElement("span");
+        label.className = "ver-label";
+        label.textContent = `ver.${verNum}`;
 
-        elNPName.textContent = `${track.displayName}  ·  ver.${track.ver}`;
-        elNP.classList.add("visible");
+        const audio = document.createElement("audio");
+        audio.src = `music/${filename}.mp3`;
+        audio.controls = true;
+        audio.preload = "none";
+
+        audio.addEventListener("play", () => {
+          if (currentAudio && currentAudio !== audio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+          }
+          currentAudio = audio;
+          // 連続再生中でない曲を手動再生した場合は連続再生を解除
+          if (ap.sectionEl && (ap.idx < 0 || ap.playlist[ap.idx]?.audio !== audio)) {
+            apStop();
+          }
+          document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+          group.classList.add("is-active");
+          elNPName.textContent = `${song.displayName}  ·  ver.${verNum}`;
+          elNP.classList.add("visible");
+        });
+
+        audio.addEventListener("ended", () => {
+          group.classList.remove("is-active");
+          // 連続再生中なら次へ（末尾なら先頭にループ）
+          if (ap.sectionEl) {
+            const next = ap.idx + 1;
+            apPlayAt(next < ap.playlist.length ? next : 0);
+          } else {
+            elNP.classList.remove("visible");
+          }
+        });
+
+        song.audios.push(audio); // プレイリスト構築用に保持
+        row.append(label, audio);
+        audioWrap.appendChild(row);
       });
 
-      audio.addEventListener("ended", () => {
-        elNP.classList.remove("visible");
-        group.classList.remove("is-active");
-      });
-
-      audioWrap.appendChild(audio);
       panel.append(panelArt, audioWrap);
-
-      // アートワーク（曲名ごとに1枚 = displayName.jpg）
-      const artSrc = `artwork/${track.displayName}.jpg`;
-
-      const thumbImg = document.createElement("img");
-      thumbImg.alt = track.displayName;
-      thumbImg.onload  = () => thumb.classList.add("loaded");
-      thumbImg.onerror = () => {};
-      thumbImg.src = artSrc;
-      thumb.appendChild(thumbImg);
-
-      const panelImg = document.createElement("img");
-      panelImg.alt = track.displayName;
-      panelImg.onload  = () => { panelArt.classList.add("loaded", "has-art"); };
-      panelImg.onerror = () => {};
-      panelImg.src = artSrc;
-      panelArt.appendChild(panelImg);
 
       // アコーディオン開閉
       header.addEventListener("click", () => {
@@ -664,9 +837,9 @@
 
       group.append(header, panel);
       trackListEl.appendChild(group);
-      trackMeta.push({
+      songMeta.push({
         el: group,
-        searchText: (track.displayName + " " + track.ver).toLowerCase(),
+        nameLower: song.displayName.toLowerCase(),
         moodLabel: mood.label,
       });
     });
@@ -679,12 +852,12 @@
   // ── 検索フィルタ ──
   elSearch.addEventListener("input", () => {
     const q = elSearch.value.trim().toLowerCase();
-    trackMeta.forEach(({ el, searchText }) => {
-      el.style.display = searchText.includes(q) ? "" : "none";
+    songMeta.forEach(({ el, nameLower }) => {
+      el.style.display = nameLower.includes(q) ? "" : "none";
     });
     // 全曲が非表示のムードセクションを隠す
     moods.forEach(mood => {
-      const anyVisible = trackMeta
+      const anyVisible = songMeta
         .filter(m => m.moodLabel === mood.label)
         .some(m => m.el.style.display !== "none");
       mood.sectionEl.style.display = anyVisible ? "" : "none";
@@ -693,7 +866,7 @@
   });
 
   function updateVisible() {
-    const count = trackMeta.filter(({ el }) => el.style.display !== "none").length;
+    const count = songMeta.filter(({ el }) => el.style.display !== "none").length;
     elVisible.textContent = count;
   }
 </script>
