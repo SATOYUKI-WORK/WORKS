@@ -10,15 +10,15 @@
   <meta property="og:type"        content="website" />
   <meta property="og:title"       content="CYBER TRACKS" />
   <meta property="og:description" content="サイバー系トラック集" />
-  <meta property="og:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CyberTracks/samune.png" />
-  <meta property="og:url"         content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CyberTracks/" />
+  <meta property="og:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/MyProject5/samune.png" />
+  <meta property="og:url"         content="https://tk2-212-15777.vs.sakura.ne.jp/app1/MyProject5/" />
   <meta property="og:site_name"   content="CYBER TRACKS" />
 
   <!-- Twitter Card（X・Discordなどでも有効） -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:title"       content="CYBER TRACKS" />
   <meta name="twitter:description" content="サイバー系トラック集" />
-  <meta name="twitter:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/CyberTracks/samune.png" />
+  <meta name="twitter:image"       content="https://tk2-212-15777.vs.sakura.ne.jp/app1/MyProject5/samune.png" />
   <style>
     /* ── リセット & CSS変数 ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -461,6 +461,225 @@
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border-hi); }
+
+    /* ── セクション再生ボタン ── */
+    .genre-play-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      padding: 0.15rem 0.5rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: color 0.15s, border-color 0.15s, text-shadow 0.15s;
+      flex-shrink: 0;
+    }
+
+    .genre-play-btn:hover,
+    .genre-section.is-section-playing .genre-play-btn {
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+      text-shadow: 0 0 8px var(--cyan-dim);
+    }
+
+    /* アクティブセクションの強調 */
+    .genre-section.is-section-playing .genre-header-row {
+      color: var(--cyan);
+    }
+
+    /* ── NOW PLAYINGバーのコントロール ── */
+    .np-controls {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .np-sect-tag {
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .np-sect-tag span { color: var(--magenta); }
+
+    .np-loop-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      padding: 0.2rem 0.55rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: color 0.15s, border-color 0.15s, text-shadow 0.15s;
+      white-space: nowrap;
+    }
+
+    .np-loop-btn:hover { color: var(--cyan); border-color: var(--cyan-dim); }
+
+    .np-loop-btn.loop-track {
+      color: var(--green);
+      border-color: var(--green);
+      text-shadow: 0 0 8px rgba(0,255,136,0.35);
+    }
+
+    .np-loop-btn.loop-section {
+      color: var(--magenta);
+      border-color: var(--magenta);
+      text-shadow: 0 0 8px rgba(255,0,200,0.35);
+    }
+
+    .np-skip-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      padding: 0.2rem 0.55rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: color 0.15s, border-color 0.15s, text-shadow 0.15s;
+      white-space: nowrap;
+    }
+
+    .np-skip-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+      text-shadow: 0 0 8px var(--cyan-dim);
+    }
+
+    .np-skip-btn:disabled {
+      opacity: 0.25;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ── グローバル再生コントロール ── */
+    .global-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .global-ctrl-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: color 0.15s, border-color 0.15s, background 0.15s, text-shadow 0.15s;
+    }
+
+    .global-ctrl-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+      text-shadow: 0 0 8px var(--cyan-dim);
+    }
+
+    .global-ctrl-btn.is-active {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      background: var(--cyan-faint);
+      text-shadow: 0 0 10px var(--cyan-dim);
+    }
+
+    .global-ctrl-btn.is-shuffle.is-active {
+      color: var(--magenta);
+      border-color: var(--magenta);
+      background: rgba(255,0,200,0.05);
+      text-shadow: 0 0 10px rgba(255,0,200,0.4);
+    }
+
+    /* ── ガイドパネル ── */
+    .help-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+      opacity: 0;
+      margin-bottom: 0;
+    }
+
+    .help-panel.is-open {
+      max-height: 600px;
+      opacity: 1;
+      margin-bottom: 1.2rem;
+    }
+
+    .help-inner {
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 1.1rem 1.4rem 1.2rem;
+      margin-top: 0.6rem;
+    }
+
+    .help-title {
+      font-size: 0.58rem;
+      letter-spacing: 0.45em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .help-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .help-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .help-grid { grid-template-columns: 1fr; }
+    }
+
+    .help-item {
+      display: flex;
+      gap: 0.7rem;
+      align-items: baseline;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .help-item:last-child { border-bottom: none; }
+
+    .help-key {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 9rem;
+    }
+
+    .help-key.key-magenta { color: var(--magenta); }
+    .help-key.key-green   { color: var(--green); }
+    .help-key.key-dim     { color: var(--text-dim); }
+
+    .help-desc {
+      font-size: 0.62rem;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      line-height: 1.6;
+    }
   </style>
 </head>
 <body>
@@ -489,6 +708,67 @@
     />
   </div>
 
+  <div class="global-controls">
+    <button class="global-ctrl-btn" id="playAllBtn">▶▶ ALL TRACKS</button>
+    <button class="global-ctrl-btn is-shuffle" id="shuffleBtn">⇄ SHUFFLE</button>
+    <button class="global-ctrl-btn" id="helpToggle">? GUIDE</button>
+  </div>
+
+  <!-- 機能説明パネル -->
+  <div class="help-panel" id="helpPanel">
+    <div class="help-inner">
+      <div class="help-title">// FEATURE GUIDE</div>
+      <div class="help-grid">
+
+        <div class="help-item">
+          <span class="help-key">▶ ALL（セクション）</span>
+          <span class="help-desc">各ジャンルヘッダーのボタン。そのセクション内の全トラック・全バージョンを順番に連続再生します。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key">▶▶ ALL TRACKS</span>
+          <span class="help-desc">全ジャンルの全トラック・全バージョンをジャンル順に連続再生します。再クリックで停止。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key is-shuffle">⇄ SHUFFLE</span>
+          <span class="help-desc">全トラック・全バージョンをランダムな順番で再生します。再クリックで停止。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key key-dim">LOOP: OFF</span>
+          <span class="help-desc">ループなし。再生リストを一度再生したら自動停止します。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key key-green">LOOP: TRACK</span>
+          <span class="help-desc">現在再生中のトラック（バージョン）を繰り返し再生します。全モードで有効。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key key-magenta">LOOP: SECT</span>
+          <span class="help-desc">アクティブなキュー（セクション・ALL・SHUFFLE）の末尾まで再生したら先頭に戻ってループします。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key">» SKIP</span>
+          <span class="help-desc">NOW PLAYINGバーのボタン。セクション／全曲／シャッフル再生中に次のトラックへスキップします。キュー未選択時は無効。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key key-dim">手動クリック</span>
+          <span class="help-desc">再生中に別のトラックを直接クリックすると、セクション／全曲モードが解除されてそのトラック単体を再生します。</span>
+        </div>
+
+        <div class="help-item">
+          <span class="help-key key-dim">SEARCH</span>
+          <span class="help-desc">トラック名でリアルタイム絞り込み。一致しないジャンルセクションは自動で非表示になります。</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <div class="track-list" id="trackList"></div>
 </main>
 
@@ -499,6 +779,11 @@
   <span class="np-pulse"></span>
   <span class="np-tag">NOW PLAYING</span>
   <span class="np-name" id="npName">—</span>
+  <div class="np-controls">
+    <span class="np-sect-tag" id="npSectTag" style="display:none">SECT: <span id="npSectName">—</span></span>
+    <button class="np-skip-btn" id="skipBtn" disabled>&#187; SKIP</button>
+    <button class="np-loop-btn" id="loopBtn">LOOP: OFF</button>
+  </div>
 </div>
 
 <script>
@@ -557,14 +842,27 @@
     },
   ];
 
-  const elList    = document.getElementById("trackList");
-  const elNP      = document.getElementById("nowPlaying");
-  const elNPName  = document.getElementById("npName");
-  const elTotal   = document.getElementById("totalCount");
-  const elVisible = document.getElementById("visibleCount");
-  const elSearch  = document.getElementById("searchInput");
+  const elList      = document.getElementById("trackList");
+  const elNP        = document.getElementById("nowPlaying");
+  const elNPName    = document.getElementById("npName");
+  const elTotal     = document.getElementById("totalCount");
+  const elVisible   = document.getElementById("visibleCount");
+  const elSearch    = document.getElementById("searchInput");
+  const elLoopBtn    = document.getElementById("loopBtn");
+  const elNPSectTag  = document.getElementById("npSectTag");
+  const elNPSectName = document.getElementById("npSectName");
+  const elPlayAllBtn  = document.getElementById("playAllBtn");
+  const elShuffleBtn  = document.getElementById("shuffleBtn");
+  const elSkipBtn     = document.getElementById("skipBtn");
+  const elHelpToggle  = document.getElementById("helpToggle");
+  const elHelpPanel   = document.getElementById("helpPanel");
 
-  let currentAudio = null;
+  let currentAudio   = null;
+  let sectionPlay    = null;    // {genreIdx, trackIdx} またはnull
+  let globalPlayMode = null;    // null | 'all' | 'shuffle'
+  let globalQueue    = [];      // 全曲フラットキュー
+  let globalQueueIdx = 0;
+  let loopMode       = 'off';   // 'off' | 'track' | 'section'
   let groups = []; // { el, title, genreDir } の配列（検索フィルタ用）
 
   // 総曲数を集計
@@ -576,7 +874,9 @@
   let globalIdx = 0; // 全ジャンル通しの曲番号
 
   // ── ジャンルセクションごとに生成 ──
-  genres.forEach(genre => {
+  genres.forEach((genre, genreIdx) => {
+    genre.playQueue = []; // セクション再生キュー: {audio, group, track, ver}
+
     const section = document.createElement("div");
     section.className = "genre-section";
     genre.sectionEl = section; // 検索フィルタで参照
@@ -589,6 +889,14 @@
       `<span>${genre.label}</span>` +
       `<span class="gh-line"></span>` +
       `<span class="gh-count">${genre.tracks.length} TRACKS</span>`;
+
+    // ▶ ALL ボタン（セクション連続再生）
+    const genrePlayBtn = document.createElement("button");
+    genrePlayBtn.className = "genre-play-btn";
+    genrePlayBtn.textContent = "▶ ALL";
+    genrePlayBtn.title = `${genre.label} を連続再生`;
+    genreHead.appendChild(genrePlayBtn);
+
     section.appendChild(genreHead);
 
     const trackListEl = document.createElement("div");
@@ -654,11 +962,19 @@
         audio.controls = true;
         audio.preload = "none";
 
+        // セクション再生キュー（全バージョンを登録）
+        genre.playQueue.push({ audio, group, track, ver });
+
         // 再生開始時の処理
         audio.addEventListener("play", () => {
           if (currentAudio && currentAudio !== audio) {
+            // 手動で別トラックを再生：全再生モードを無効化
             currentAudio.pause();
             currentAudio.currentTime = 0;
+            sectionPlay = null;
+            globalPlayMode = null;
+            globalQueue = [];
+            updatePlayModeUI();
           }
           currentAudio = audio;
 
@@ -670,8 +986,22 @@
         });
 
         audio.addEventListener("ended", () => {
-          elNP.classList.remove("visible");
-          group.classList.remove("is-active");
+          if (loopMode === 'track') {
+            // トラックループ：同じトラックを再生
+            audio.currentTime = 0;
+            audio.play().catch(console.error);
+            return;
+          }
+          if (globalPlayMode !== null && currentAudio === audio) {
+            // 全曲再生中：次のトラックへ
+            advanceGlobalPlay();
+          } else if (sectionPlay !== null && currentAudio === audio) {
+            // セクション再生中：次のトラックへ
+            advanceSectionPlay();
+          } else {
+            elNP.classList.remove("visible");
+            group.classList.remove("is-active");
+          }
         });
 
         row.append(label, audio);
@@ -690,6 +1020,7 @@
       group.append(header, panel);
       trackListEl.appendChild(group);
       groups.push({ el: group, title: track.title.toLowerCase(), genreDir: genre.dir });
+
 
       // アートワーク画像（artwork/タイトル.jpg）を直接参照
       const artSrc = `artwork/${track.title}.jpg`;
@@ -710,9 +1041,207 @@
     });
 
     elList.appendChild(section);
+
+    // ▶ ALL ボタン：セクション内を先頭から連続再生
+    genrePlayBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (genre.playQueue.length === 0) return;
+      globalPlayMode = null;  // グローバル再生を無効化
+      globalQueue = [];
+      sectionPlay = { genreIdx, trackIdx: 0 };
+      playAudioItem(genre.playQueue[0], true);
+    });
   });
 
   updateVisible();
+
+  // ── セクション／全曲再生：プログラム的に指定アイテムを再生 ──
+  function playAudioItem(item, openAccordion = true) {
+    const { audio, group } = item;
+
+    // 再生中の別オーディオを停止（playイベントより先にcurrentAudioをセットして
+    // 手動再生との誤判定を防ぐ）
+    if (currentAudio && currentAudio !== audio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+    currentAudio = audio; // playイベント発火前にセット
+
+    // アコーディオンを開いてスクロール
+    if (openAccordion) {
+      document.querySelectorAll(".track-group.is-open").forEach(g => g.classList.remove("is-open"));
+      group.classList.add("is-open");
+      setTimeout(() => group.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+    }
+
+    updatePlayModeUI();
+
+    audio.currentTime = 0;
+    audio.play().catch(console.error);
+  }
+
+  // ── セクション再生：次のトラックへ進む ──
+  function advanceSectionPlay() {
+    const genre = genres[sectionPlay.genreIdx];
+    let nextIdx = sectionPlay.trackIdx + 1;
+
+    if (nextIdx >= genre.playQueue.length) {
+      if (loopMode === 'section') {
+        // セクションループ：先頭に戻る
+        nextIdx = 0;
+      } else {
+        // セクション再生終了
+        sectionPlay = null;
+        elNP.classList.remove("visible");
+        document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+        updatePlayModeUI();
+        return;
+      }
+    }
+
+    sectionPlay.trackIdx = nextIdx;
+    playAudioItem(genre.playQueue[nextIdx], true);
+  }
+
+  // ── 全曲再生：次のトラックへ進む ──
+  function advanceGlobalPlay() {
+    let nextIdx = globalQueueIdx + 1;
+
+    if (nextIdx >= globalQueue.length) {
+      if (loopMode === 'section') {
+        // キューをループ：先頭に戻る
+        nextIdx = 0;
+      } else {
+        // 全曲再生終了
+        globalPlayMode = null;
+        globalQueue = [];
+        elNP.classList.remove("visible");
+        document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+        updatePlayModeUI();
+        return;
+      }
+    }
+
+    globalQueueIdx = nextIdx;
+    playAudioItem(globalQueue[nextIdx], true);
+  }
+
+  // ── 全曲再生を開始（mode: 'all' | 'shuffle'） ──
+  function startGlobalPlay(mode) {
+    // 全ジャンルのplayQueueをフラットに結合
+    const allItems = genres.flatMap(g => g.playQueue);
+    if (allItems.length === 0) return;
+
+    if (mode === 'shuffle') {
+      // Fisher-Yatesシャッフル
+      globalQueue = [...allItems];
+      for (let i = globalQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [globalQueue[i], globalQueue[j]] = [globalQueue[j], globalQueue[i]];
+      }
+    } else {
+      globalQueue = [...allItems];
+    }
+
+    globalQueueIdx = 0;
+    globalPlayMode = mode;
+    sectionPlay = null;
+
+    playAudioItem(globalQueue[0], true);
+  }
+
+  // ── 再生モードUIの更新（セクション・全曲・シャッフル共通） ──
+  function updatePlayModeUI() {
+    genres.forEach(g => g.sectionEl.classList.remove("is-section-playing"));
+    elPlayAllBtn.classList.remove('is-active');
+    elShuffleBtn.classList.remove('is-active');
+
+    const hasQueue = globalPlayMode !== null || sectionPlay !== null;
+    elSkipBtn.disabled = !hasQueue;
+
+    if (globalPlayMode === 'all') {
+      elNPSectTag.style.display = '';
+      elNPSectName.textContent = 'ALL TRACKS';
+      elPlayAllBtn.classList.add('is-active');
+    } else if (globalPlayMode === 'shuffle') {
+      elNPSectTag.style.display = '';
+      elNPSectName.textContent = 'SHUFFLE';
+      elShuffleBtn.classList.add('is-active');
+    } else if (sectionPlay !== null) {
+      genres[sectionPlay.genreIdx].sectionEl.classList.add("is-section-playing");
+      elNPSectTag.style.display = '';
+      elNPSectName.textContent = genres[sectionPlay.genreIdx].label;
+    } else {
+      elNPSectTag.style.display = 'none';
+    }
+  }
+
+  // ── ループボタンの表示更新 ──
+  function updateLoopBtn() {
+    elLoopBtn.className = 'np-loop-btn';
+    if (loopMode === 'off') {
+      elLoopBtn.textContent = 'LOOP: OFF';
+    } else if (loopMode === 'track') {
+      elLoopBtn.textContent = 'LOOP: TRACK';
+      elLoopBtn.classList.add('loop-track');
+    } else {
+      elLoopBtn.textContent = 'LOOP: SECT';
+      elLoopBtn.classList.add('loop-section');
+    }
+  }
+
+  // ループボタン：OFF → TRACK → SECT → OFF の順で切替
+  elLoopBtn.addEventListener("click", () => {
+    if (loopMode === 'off')        loopMode = 'track';
+    else if (loopMode === 'track') loopMode = 'section';
+    else                           loopMode = 'off';
+    updateLoopBtn();
+  });
+
+  // ▶▶ ALL TRACKS ボタン：全曲連続再生（再クリックで停止）
+  elPlayAllBtn.addEventListener("click", () => {
+    if (globalPlayMode === 'all') {
+      // 停止
+      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      globalPlayMode = null;
+      globalQueue = [];
+      elNP.classList.remove("visible");
+      document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+      updatePlayModeUI();
+    } else {
+      startGlobalPlay('all');
+    }
+  });
+
+  // » SKIP ボタン：次のトラックへスキップ
+  elSkipBtn.addEventListener("click", () => {
+    if (globalPlayMode !== null) {
+      advanceGlobalPlay();
+    } else if (sectionPlay !== null) {
+      advanceSectionPlay();
+    }
+  });
+
+  // ? GUIDE ボタン：機能説明パネルの開閉
+  elHelpToggle.addEventListener("click", () => {
+    const isOpen = elHelpPanel.classList.toggle("is-open");
+    elHelpToggle.classList.toggle("is-active", isOpen);
+  });
+
+  // ⇄ SHUFFLE ボタン：全曲シャッフル再生（再クリックで停止）
+  elShuffleBtn.addEventListener("click", () => {
+    if (globalPlayMode === 'shuffle') {
+      // 停止
+      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      globalPlayMode = null;
+      globalQueue = [];
+      elNP.classList.remove("visible");
+      document.querySelectorAll(".track-group").forEach(g => g.classList.remove("is-active"));
+      updatePlayModeUI();
+    } else {
+      startGlobalPlay('shuffle');
+    }
+  });
 
   // ── 検索フィルタ ──
   elSearch.addEventListener("input", () => {
